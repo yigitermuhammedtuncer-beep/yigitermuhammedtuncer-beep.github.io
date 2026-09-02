@@ -327,14 +327,18 @@
   .contact-links a:hover{ color:var(--ink); border-color:var(--accent); }
   .foot-note{ color:var(--muted-dim); font-size:0.78rem; margin-top:40px; }
 
+  /* hero/about stay side-by-side down to tablet width; only the window's
+     fixed-height/scroll-rail behaviour switches off at 900px */
   @media (max-width:900px){
     .os-window{ height:auto; margin:16px; }
     .os-body{ overflow:visible; }
     .os-scrollrail{ display:none; }
-    .hero-grid{ grid-template-columns:1fr; gap:30px; }
-    .about-grid{ grid-template-columns:1fr; gap:30px; }
     .menu-links{ gap:16px; }
     .frame{ padding:0 22px; }
+  }
+  @media (max-width:680px){
+    .hero-grid{ grid-template-columns:1fr; gap:30px; }
+    .about-grid{ grid-template-columns:1fr; gap:30px; }
   }
   @media (prefers-reduced-motion:reduce){
     .os-body{ scroll-behavior:auto; }
@@ -350,7 +354,7 @@
     <div class="dots">
       <span class="dot"></span><span class="dot"></span><span class="dot amber"></span>
     </div>
-    <div class="win-title"><b>yigiter@portfolio</b>:~$ open .</div>
+    <div class="win-title"><b>yigiter@portfolio</b>:~$</div>
     <div class="dots-right">
       <span class="dot"></span><span class="dot"></span>
     </div>
@@ -368,10 +372,10 @@
       <div class="frame hero-grid">
         <div>
           <span class="kicker">Portfolio</span>
-          <h1>I design<br>systems, then<br>teach them to<br>think.</h1>
+          <h1>Selected individual<br>and collaborative works<br>across diverse disciplines.</h1>
         </div>
         <div class="hero-right">
-          <p>MSc candidate in Mechatronics &amp; Robotics at Politecnico di Milano. I've worked across aerospace manufacturing, automotive R&amp;D, and cloud infrastructure — this site is where I share the projects I've built or involved so far — and it'll keep growing as new ones come along..</p>
+          <p>MSc candidate in Mechatronics &amp; Robotics at Politecnico di Milano. I've worked across aerospace manufacturing, automotive R&amp;D, and cloud infrastructure — this site is where I share the projects I've built or been involved in so far, and it'll keep growing as new ones come along.</p>
           <div class="pill-group">
             <a class="pill pill-primary" href="mailto:yigitermuhammedtuncer@gmail.com">Resume</a>
             <a class="pill pill-secondary" href="#projects">Projects</a>
@@ -563,7 +567,7 @@
           <h2>Skills</h2>
         </div>
         <p class="skills-line">
-          <span>Siemens NX</span><span class="dot-sep">·</span><span>SolidWorks</span><span class="dot-sep">·</span><span>CATIA</span><span class="dot-sep">·</span><span>Ansys Workbench</span><span class="dot-sep">·</span><span>AutoCAD</span><span class="dot-sep">·</span><span>FreeCAD</span><span class="dot-sep">·</span><span>MATLAB</span><span class="dot-sep">·</span><span>MATLAB Simulink</span><span class="dot-sep">·</span><span>Python</span><span class="dot-sep">·</span><span>PyTorch</span><span class="dot-sep">·</span><span>GitHub</span><span class="dot-sep">·</span><span>LabView</span><span class="dot-sep">·</span><span>COMSOL</span><span class="dot-sep">·</span><span>Altair HyperWorks</span><span class="dot-sep">·</span><span>Arduino IDE</span><span class="dot-sep">·</span><span>Overleaf</span><span class="dot-sep">·</span><span>MS Office</span><span class="dot-sep">·</span><span>Mathematica</span><span class="dot-sep">·</span><span>Canva</span>
+          <span>Siemens NX</span><span class="dot-sep">·</span><span>SolidWorks</span><span class="dot-sep">·</span><span>CATIA</span><span class="dot-sep">·</span><span>Ansys Workbench</span><span class="dot-sep">·</span><span>AutoCAD</span><span class="dot-sep">·</span><span>FreeCAD</span><span class="dot-sep">·</span><span>MATLAB</span><span class="dot-sep">·</span><span>MATLAB Simulink</span><span class="dot-sep">·</span><span>Python</span><span class="dot-sep">·</span><span>PyTorch</span><span class="dot-sep">·</span><span>GitHub</span><span class="dot-sep">·</span><span>LabView</span><span class="dot-sep">·</span><span>COMSOL</span><span class="dot-sep">·</span><span>Altair HyperWorks</span><span class="dot-sep">·</span><span>Arduino IDE</span><span class="dot-sep">·</span><span>Overleaf</span><span class="dot-sep">·</span><span>MS Office</span><span class="dot-sep">·</span><span>Mathematica</span><span class="dot-sep">·</span><span>TM Flow</span><span class="dot-sep">·</span><span>Bambu Studio</span><span class="dot-sep">·</span><span>Canva</span>
         </p>
       </div>
     </section>
@@ -571,7 +575,7 @@
     <section class="contact-section" id="contact">
       <div class="frame">
         <span class="kicker">Get in touch</span>
-        <h2>Let's build something together.</h2>
+        <h2>Ready for the next challenge.</h2>
         <div class="contact-links">
           <a href="mailto:yigitermuhammedtuncer@gmail.com">yigitermuhammedtuncer@gmail.com</a>
           <a href="https://github.com/yigitermuhammedtuncer-beep" target="_blank" rel="noopener">GitHub</a>
