@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automated Helmet Defect Inspection &amp; Marking — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.12);
+    --line-soft:rgba(242,240,236,0.07);
+    --panel:#0e0e10;
+    --ok:#a9c99a;
+    --warn:#d9b46a;
+    --bad:#c98a8a;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img, video{ max-width:100%; display:block; border-radius:8px; }
+  .wrap{ max-width:780px; margin:0 auto; padding:0 28px 120px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:block;
+    margin-bottom:14px;
+  }
+
+  header.top{ padding:36px 0 0; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.03em;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--ink); }
+
+  .hero{ padding:34px 0 40px; border-bottom:1px solid var(--line); }
+  .hero-img{ margin:26px 0 30px; aspect-ratio:16/9; overflow:hidden; }
+  .hero-img img{ width:100%; height:100%; object-fit:cover; border-radius:10px; }
+  .hero h1{
+    font-family:'Sora', sans-serif; font-weight:800;
+    font-size:clamp(1.9rem, 4.4vw, 2.6rem);
+    line-height:1.12; letter-spacing:-0.01em; margin:0 0 16px; text-wrap:balance;
+  }
+  .hero .meta{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted-dim); margin-bottom:6px; }
+  .hero .team{ font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim); margin-bottom:22px; }
+  .hero p.lede{ color:var(--muted); font-size:1.05rem; max-width:64ch; }
+
+  section{ padding:54px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  section h2{ font-family:'Sora', sans-serif; font-weight:700; font-size:1.4rem; margin:0 0 20px; letter-spacing:-0.005em; }
+  section h3{ font-family:'Sora', sans-serif; font-weight:600; font-size:1.02rem; margin:0 0 6px; }
+  section p{ color:var(--muted); margin:0 0 14px; }
+  section p:last-child{ margin-bottom:0; }
+
+  /* numbered card list (objective, trajectory principles) */
+  .num-list{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .num-item{ display:grid; grid-template-columns:44px 1fr; gap:16px; padding:18px 20px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .num-item:last-child{ border-bottom:none; }
+  .num-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--accent);
+    border:1px solid var(--line); border-radius:50%;
+    width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  }
+  .num-item p{ margin:0; font-size:0.9rem; }
+
+  /* two/three col card grid (clamps, tools, deliverables) */
+  .card-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .card{ border:1px solid var(--line); border-radius:8px; padding:16px 18px; }
+  .card p{ font-size:0.88rem; margin:0; }
+
+  /* bug / engineering-decision cards */
+  .bug{ border-left:2px solid var(--line); padding-left:18px; margin-bottom:24px; }
+  .bug:last-child{ margin-bottom:0; }
+  .bug-tag{ font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--accent); letter-spacing:0.04em; display:block; margin-bottom:6px; }
+  .bug p{ font-size:0.92rem; }
+
+  /* simple data table */
+  table{ width:100%; border-collapse:collapse; font-size:0.86rem; }
+  th, td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); color:var(--muted); }
+  th{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted-dim); font-weight:500; }
+  td.ok{ color:var(--ok); }
+  td.warn{ color:var(--warn); }
+  td.bad{ color:var(--bad); }
+
+  /* code block */
+  .code{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:16px 18px; font-family:'IBM Plex Mono', monospace; font-size:0.78rem;
+    color:#c9d4c2; overflow-x:auto; line-height:1.6; margin-bottom:14px;
+  }
+  .code .c{ color:var(--muted-dim); }
+
+  /* checklist */
+  .check-list{ display:flex; flex-direction:column; gap:14px; }
+  .check-item{ display:grid; grid-template-columns:22px 1fr; gap:12px; }
+  .check-item .mark{ color:var(--ok); font-family:'IBM Plex Mono', monospace; }
+  .check-item p{ margin:0; font-size:0.9rem; }
+  .check-item b{ color:var(--ink); }
+
+  /* gallery */
+  .gallery-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
+  .gallery-grid img{ aspect-ratio:4/3; object-fit:cover; width:100%; }
+  .video-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .video-card{ border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .video-card video{ width:100%; display:block; border-radius:0; }
+  .video-label{ padding:10px 14px; font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted); }
+
+  .downloads{ display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; }
+  .dl{
+    display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+    border:1px solid var(--line); color:var(--ink); padding:11px 18px; border-radius:999px;
+    font-size:0.86rem; transition:border-color .15s ease;
+  }
+  .dl:hover{ border-color:var(--accent); }
+  .dl .ext{ color:var(--muted-dim); font-family:'IBM Plex Mono', monospace; font-size:0.72rem; }
+
+  footer.bottom{ padding:40px 0 0; }
+
+  @media (max-width:600px){
+    .card-grid{ grid-template-columns:1fr; }
+    .gallery-grid{ grid-template-columns:1fr; }
+    .video-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <a class="back-link" href="index.html">← Back to Portfolio</a>
+  </header>
+
+  <section class="hero" style="border-top:none;">
+    <span class="kicker">Robotics · TM12 Cobot · Politecnico di Milano Bovisa</span>
+    <h1>Automated Helmet Defect Inspection &amp; Marking</h1>
+    <div class="meta">Feb 2026 – Jun 2026 · Innovative Applications of Industrial Robotics</div>
+    <div class="team">Group 1 — Hazik Javid · Kaichen Wang · Omid Arefian · Justine Byron Banco · Isidora Mitic · Yigiter Tuncer</div>
+    <div class="hero-img"><img src="helmet-hero.jpg" alt="Motorcycle helmet mounted in the TM12 workcell fixture"></div>
+    <p class="lede">A fully robotic workcell built on the Omron TM12 cobot that cyclically inspects a motorcycle helmet for a surface defect, localises it in 3D, and physically marks it with a pen — scripted entirely in Python through the TM12 Listen Node, with no offline teaching.</p>
+  </section>
+
+  <section>
+    <h2>Objective</h2>
+    <div class="num-list">
+      <div class="num-item"><div class="num-badge">1</div><p><b>Anchorage</b> — a rigid fixture for the helmet that doesn't obstruct the robot's workspace.</p></div>
+      <div class="num-item"><div class="num-badge">2</div><p><b>Eyeshield actuation</b> — open and close both the outer visor and inner sun-visor cyclically.</p></div>
+      <div class="num-item"><div class="num-badge">3</div><p><b>Defect detection</b> — locate a surface defect (a green sticker) in 3D via a ZED Mini stereo camera.</p></div>
+      <div class="num-item"><div class="num-badge">4</div><p><b>Physical marking</b> — move the robot to the detected point and mark it with a pen tool.</p></div>
+      <div class="num-item"><div class="num-badge">5</div><p><b>Full Python control</b> — script the entire pipeline through the TM12 Listen Node, no offline teaching.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mechanical design — anchorage system</h2>
+    <p>The helmet has to be held rigidly in all six degrees of freedom without high clamping pressure that could damage its shell, and without blocking the arm's reach. The solution uses four 3D-printed clamps that key into the helmet's own internal cavities rather than relying on friction.</p>
+    <div class="card-grid" style="margin-top:18px;">
+      <div class="card"><h3>Outer front clamp</h3><p>Mirrors the helmet's front curvature and keys into a dedicated cavity with a tab-and-slot lock — rotation-independent of clamping pressure. Sized to bear the pull and overturning moment from outer-visor actuation.</p></div>
+      <div class="card"><h3>Outer rear clamp</h3><p>Mirrors the rear shell curvature, positioned opposite the front clamp along the longitudinal axis. Closes the constraint set against backward slide and twisting.</p></div>
+      <div class="card"><h3>Inner front clamp</h3><p>Seats inside the helmet's internal cavity to resist the forward push generated during outer-visor actuation, without adding clamping pressure.</p></div>
+      <div class="card"><h3>Inner rear clamp</h3><p>Acts as a rigid stop against the helmet lifting at the rear when the front visor is actuated — distributes clamping stress across the shell to avoid stress concentrations.</p></div>
+    </div>
+    <p style="margin-top:16px;">An H-shaped wooden base elevates the whole fixture, keeping the helmet within the TM12's optimal working envelope and avoiding kinematic singularities near the table.</p>
+    <div class="video-card" style="margin-top:20px; max-width:420px;">
+      <video controls preload="metadata" src="helmet-mounting.mp4"></video>
+      <div class="video-label">Mounting the helmet into the anchorage fixture</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Eyeshield actuation tooling</h2>
+    <div class="gallery-grid" style="margin-bottom:20px;">
+      <img src="effector-part.jpg" alt="3D-printed modular end-effector body, red and black, on the workbench">
+      <img src="effector-mounted.jpg" alt="End-effector body mounted on the TM12 wrist flange, LED ring lit">
+    </div>
+    <div class="card-grid">
+      <div class="card"><h3>Modular end-effector body</h3><p>A rigid, multi-faced 3D-printed core mounted on the TM12 wrist. Every face shares an identical bolt pattern, so tools (visor openers, marker, camera) bolt on and off as independent modules.</p></div>
+      <div class="card"><h3>Outer visor tool</h3><p>Face profile is the inverse of the visor button, maximizing contact area; the lifting edge mirrors the visor's 45° entry angle for clean engagement before the vertical lift.</p></div>
+      <div class="card"><h3>Inner visor tool</h3><p>Dual-mode interface — a form-fitted protrusion for the "pull" stroke and an angled face for the "release" rotation — on a two-leg structure that resists the bending and vibration from the snap-release.</p></div>
+      <div class="card"><h3>Mounting</h3><p>Camera and marker share a face to keep kinematic approach vectors simple and minimize unnecessary joint rotation during a cycle.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Software &amp; motion control</h2>
+    <p>All communication with the TM12 runs over three simultaneous TCP channels:</p>
+    <table style="margin-bottom:22px;">
+      <tr><th>Channel</th><th>Port</th><th>Purpose</th></tr>
+      <tr><td>Modbus TCP</td><td>502</td><td>Read-only live TCP pose &amp; joint angles, polled before every camera frame</td></tr>
+      <tr><td>TMSCT</td><td>5890</td><td>Motion commands (PTP / LINE / JMOVE) to the Listen Node</td></tr>
+      <tr><td>TMSVR</td><td>5891</td><td>Named variable table, used to confirm Listen Node readiness</td></tr>
+    </table>
+    <h3>Custom reference frame</h3>
+    <p>The TM12's native <code>ChangeBase</code> / <code>ChangeTCP</code> commands cause the robot to silently exit the Listen Node, severing the control connection — so every coordinate transform is handled as a pure translation in Python instead:</p>
+    <div class="code">ORIGIN = [-189.0, 352.0, 230.0]  <span class="c"># mm, measured once</span><br>abs_XYZ = ref_XYZ + ORIGIN       <span class="c"># pure translation</span><br>ref_XYZ = abs_XYZ - ORIGIN       <span class="c"># inverse</span></div>
+    <p>If the table moves, one number changes — no waypoint needs re-editing, and no rotation matrices are involved since the table is axis-aligned to the robot base.</p>
+    <h3 style="margin-top:24px;">Trajectory design principles</h3>
+    <div class="card-grid" style="margin-top:14px;">
+      <div class="card"><h3>Origin-centric loops</h3><p>Every trajectory starts and ends at a fixed origin, resetting global state between tasks.</p></div>
+      <div class="card"><h3>Safe-point staging</h3><p>Each task defines a proximity safe-point to avoid lateral interference with the anchorage fixture.</p></div>
+      <div class="card"><h3>Symmetric retraction</h3><p>Retraction mirrors the entry path — the TCP returns to a safe-point before homing.</p></div>
+      <div class="card"><h3>Joint-configuration guard</h3><p>Checks J5/J6 before scanning and corrects silent IK wrist-flips with a JMOVE + re-PTP.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Vision &amp; detection</h2>
+    <p>Two independent detection pipelines were developed in parallel and compared:</p>
+    <table style="margin-bottom:22px;">
+      <tr><th>Aspect</th><th>Pipeline 1 — Sphere Arc</th><th>Pipeline 2 — Ellipse Orbit</th></tr>
+      <tr><td>Scan geometry</td><td>4 hemisphere arcs, varying elevation</td><td>7-point horizontal ellipse, fixed elevation</td></tr>
+      <tr><td>Camera transform</td><td>SolidWorks-derived + 2-view calibration</td><td>Calibrated 6-view rotation matrix</td></tr>
+      <tr><td>Marking</td><td class="bad">Not integrated</td><td class="ok">Fully integrated</td></tr>
+      <tr><td>Code structure</td><td>Monolithic, single file</td><td>Modular, one file per responsibility</td></tr>
+      <tr><td>Status</td><td class="warn">Detection validated</td><td class="ok">End-to-end validated</td></tr>
+    </table>
+    <h3>Per-frame detection pipeline</h3>
+    <div class="num-list">
+      <div class="num-item"><div class="num-badge">1</div><p><b>BGR → HSV</b> — HSV is far less sensitive to lab lighting changes than RGB.</p></div>
+      <div class="num-item"><div class="num-badge">2</div><p><b>Threshold</b> — HSV bounds plus an RGB ratio check to filter lighting artefacts.</p></div>
+      <div class="num-item"><div class="num-badge">3</div><p><b>Morphology</b> — open + close operations remove noise and fill small holes in the mask.</p></div>
+      <div class="num-item"><div class="num-badge">4</div><p><b>Contours</b> — filtered by area and circularity; best candidate selected.</p></div>
+      <div class="num-item"><div class="num-badge">5</div><p><b>Depth → 3D</b> — ZED depth sampled within the contour mask; robust estimate via median + trimmed mean.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Marking system</h2>
+    <p>Because the marker tip isn't at the TCP origin, the robot solves the target orientation first, then computes the tip offset at that orientation — otherwise the pen would miss laterally. The touch height (Z) uses a physically calibrated constant rather than the noisier depth reading, since ZED depth at oblique scan angles has 5–15 mm of frame-to-frame noise.</p>
+    <table style="margin-top:16px;">
+      <tr><th>Radial offset from apex</th><th>Surface drop (ΔZ)</th><th>Assessment</th></tr>
+      <tr><td>10–20 mm</td><td>0.4–1.6 mm</td><td class="ok">Negligible / within clearance</td></tr>
+      <tr><td>35 mm</td><td>4.9 mm</td><td class="ok">Borderline safe</td></tr>
+      <tr><td>50 mm</td><td>10.0 mm</td><td class="warn">Needs geometric correction</td></tr>
+      <tr><td>80–100 mm</td><td>27.5–46.9 mm</td><td class="bad">Misses the surface</td></tr>
+    </table>
+    <p style="margin-top:14px;">A spring-loaded marker sleeve absorbs 2–3 mm of residual error as controlled overtravel, keeping the fixed-Z approach reliable within roughly ±35 mm of the helmet apex.</p>
+  </section>
+
+  <section>
+    <h2>Engineering deep-dive — bugs found &amp; fixed</h2>
+    <p>A few of the debugging stories that shaped the final design:</p>
+
+    <div class="bug">
+      <span class="bug-tag">The 173 mm sphere-centre bug</span>
+      <p>Pipeline 1's scan sphere was originally centred on the robot flange position rather than the camera position. At the home orientation the ZED camera sits ~173 mm ahead of the flange, so every arc waypoint orbited a point 173 mm off the actual helmet centre — an asymmetric scan that mostly missed the helmet. Fixed by deriving the sphere centre from the live camera pose instead.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">The depth-sampling scale error</span>
+      <p>Early depth extraction sampled a fixed 18-pixel circle around the sticker's centroid — which pulled in curved helmet surface outside the actual sticker. This produced a confirmed ~1.4–1.6× depth scale error, caught by moving the robot a known distance and comparing the resulting 3D shift. Fixed by sampling depth only within the actual contour mask.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">LINE vs. PTP kinematic infeasibility</span>
+      <p>Several visor waypoints threw a kinematic-infeasibility error when sent as Cartesian LINE moves. All non-contact visor motion was switched to joint-space PTP; LINE was kept only for the marking touch-down and retract, where straight-line contact actually matters.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">J6 wind-up / silent IK flip</span>
+      <p>Unconstrained PTP commands let the controller silently pick an alternate wrist configuration for the same Cartesian pose, producing large, unexpected arm motions. Fixed with a joint-configuration guard before scanning, and a JMOVE ±180° on J6 followed by a re-PTP to lock the intended configuration.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">ChangeBase / ChangeTCP prohibition</span>
+      <p>TM12's native frame-change commands silently kick the robot out of the Listen Node, severing the Python control connection entirely. Solved by keeping all coordinate-frame arithmetic as plain translation offsets in Python, never touching the robot's native frame commands.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What we delivered</h2>
+    <div class="check-list">
+      <div class="check-item"><span class="mark">✓</span><p><b>Modular end-effector</b> — four interchangeable tools on one 3D-printed base: camera, pen, and two visor actuators.</p></div>
+      <div class="check-item"><span class="mark">✓</span><p><b>Rigid anchorage</b> — inverse-geometry interlocking clamps with H-beam elevation, no high clamping pressure.</p></div>
+      <div class="check-item"><span class="mark">✓</span><p><b>Full visor actuation</b> — both outer and inner visors open and close reliably with singularity-safe trajectories.</p></div>
+      <div class="check-item"><span class="mark">✓</span><p><b>3D defect localisation</b> — ZED Mini + multi-view fusion, accurate to ±35 mm at the apex.</p></div>
+      <div class="check-item"><span class="mark">✓</span><p><b>Automated marking</b> — full end-to-end pipeline with tip-offset compensation physically marks the defect.</p></div>
+      <div class="check-item"><span class="mark">✓</span><p><b>Scriptable control</b> — complete Python control via the Listen Node, no offline teaching, no proprietary TM tools.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Known limitations &amp; roadmap</h2>
+    <div class="bug">
+      <span class="bug-tag">Fixed-Z valid for apex only</span>
+      <p>Reliable within ~±35 mm of the helmet apex. → A ~20-line analytical correction using the spherical surface model would extend this across the full helmet, with no new calibration hardware.</p>
+    </div>
+    <div class="bug">
+      <span class="bug-tag">Marking not wired into Pipeline 1</span>
+      <p>The compensation math is written and correct — it just needs connecting to Pipeline 1's motion sequence.</p>
+    </div>
+    <div class="bug">
+      <span class="bug-tag">Anchorage footprint limits rear view</span>
+      <p>The clamping blocks reduce camera access to the rear/lower helmet. → Miniaturising the clamp geometry would open that view up.</p>
+    </div>
+    <div class="bug">
+      <span class="bug-tag">Static scan positions</span>
+      <p>Both pipelines scan the same fixed positions regardless of where the defect actually is. → A coarse scan to identify the quadrant first, then a targeted fine scan, would cut cycle time.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Gallery</h2>
+    <div class="gallery-grid">
+      <img src="workshop-context.jpg" alt="Workcell overview and team working with the TM12 arms">
+      <img src="effector-part.jpg" alt="3D-printed end-effector body detail">
+    </div>
+    <div class="video-grid">
+      <div class="video-card">
+        <video controls preload="metadata" src="outer-visor-open.mp4"></video>
+        <div class="video-label">Outer visor — opening trajectory</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="outer-visor-close.mp4"></video>
+        <div class="video-label">Outer visor — closing trajectory</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="inner-visor-open.mp4"></video>
+        <div class="video-label">Inner visor — opening trajectory</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="inner-visor-close.mp4"></video>
+        <div class="video-label">Inner visor — closing trajectory</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Downloads</h2>
+    <div class="downloads">
+      <a class="dl" href="tm12-presentation.pdf" download>Project presentation <span class="ext">PDF</span></a>
+      <a class="dl" href="tm12-technical-report.pdf" download>Technical report <span class="ext">PDF</span></a>
+    </div>
+  </section>
+
+  <footer class="bottom">
+    <a class="back-link" href="index.html">← Back to Portfolio</a>
+  </footer>
+
+</div>
+
+</body>
+</html>
