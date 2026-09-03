@@ -176,7 +176,7 @@
     margin:0;
   }
   .hero-right p{ color:var(--muted); font-size:1.02rem; margin:0 0 28px; }
-  .pill-group{ display:flex; gap:12px; }
+  .pill-group{ display:flex; gap:12px; flex-wrap:wrap; }
   .pill{
     display:inline-block;
     text-align:center;
@@ -277,19 +277,11 @@
     repeating-linear-gradient(90deg, rgba(242,240,236,0.07) 0 1px, transparent 1px 18px),
     radial-gradient(circle at 70% 70%, rgba(242,240,236,0.22), transparent 45%),
     #0f0f11; }
-  .pat-control{ background:
-    repeating-linear-gradient(135deg, rgba(242,240,236,0.06) 0 2px, transparent 2px 30px),
-    radial-gradient(circle at 20% 80%, rgba(242,240,236,0.18), transparent 50%),
-    #101012; }
   .pat-topology{ background:
     radial-gradient(circle at 30% 30%, rgba(242,240,236,0.11), transparent 40%),
     radial-gradient(circle at 70% 60%, rgba(242,240,236,0.09), transparent 35%),
     radial-gradient(circle at 50% 85%, rgba(242,240,236,0.20), transparent 45%),
     #0e0e10; }
-  .pat-modal{ background:
-    repeating-linear-gradient(90deg, rgba(242,240,236,0.09) 0 3px, transparent 3px 14px),
-    radial-gradient(circle at 60% 30%, rgba(242,240,236,0.18), transparent 50%),
-    #0f0f11; }
   .pat-wheel{ background:
     radial-gradient(circle at 50% 50%, transparent 29%, rgba(242,240,236,0.08) 30% 33%, transparent 34%),
     radial-gradient(circle at 50% 50%, rgba(242,240,236,0.18), transparent 60%),
@@ -298,6 +290,16 @@
     repeating-linear-gradient(100deg, rgba(242,240,236,0.10) 0 3px, transparent 3px 40px),
     radial-gradient(circle at 80% 80%, rgba(242,240,236,0.18), transparent 50%),
     #0e0e10; }
+  .pat-fridge{ background:
+    repeating-linear-gradient(0deg, rgba(242,240,236,0.07) 0 1px, transparent 1px 34px),
+    radial-gradient(circle at 25% 75%, rgba(242,240,236,0.18), transparent 50%),
+    #0f0f11; }
+  .pat-gripper{ background:
+    radial-gradient(circle at 50% 30%, rgba(242,240,236,0.10), transparent 38%),
+    radial-gradient(circle at 35% 60%, rgba(242,240,236,0.08), transparent 32%),
+    radial-gradient(circle at 65% 60%, rgba(242,240,236,0.08), transparent 32%),
+    radial-gradient(circle at 50% 80%, rgba(242,240,236,0.18), transparent 45%),
+    #101013; }
 
   /* ---------- ABOUT ---------- */
   .about-grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; }
@@ -355,7 +357,7 @@
     <div class="dots">
       <span class="dot"></span><span class="dot"></span><span class="dot amber"></span>
     </div>
-    <div class="win-title"><b>yigiter@portfolio</b>:~$open</div>
+    <div class="win-title"><b>yigiter@portfolio</b>:~$ open</div>
     <div class="dots-right">
       <span class="dot"></span><span class="dot"></span>
     </div>
@@ -380,6 +382,7 @@
           <div class="pill-group">
             <a class="pill pill-primary" href="mailto:yigitermuhammedtuncer@gmail.com">Resume</a>
             <a class="pill pill-secondary" href="#projects">Projects</a>
+            <!-- TODO: PDF dosya adını GitHub'a yüklediğin gerçek isimle eşleştir -->
             <a class="pill pill-secondary" href="yigiter-tuncer-cv.pdf" download>CV</a>
           </div>
         </div>
@@ -410,6 +413,7 @@
               <span class="dt">Politecnico di Milano — Feb 2026 – Ongoing</span>
               A hybrid deep learning pipeline (YOLOv11, U-Net/Transformer vectorization, GraphSAGE, Transformer decoder) with cross-view attention fusion and OCR cross-validation, reconstructing editable, GD&amp;T-compliant parametric CAD models from 2D engineering drawings — integrated into FreeCAD via its Python API.
               <div class="tags"><span class="tag">Python</span><span class="tag">Deep Learning</span><span class="tag">CAD</span></div>
+              <a href="thesis.html" style="display:inline-block;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:2px;text-decoration:none;">Read full case study →</a>
             </div>
           </details>
 
@@ -449,23 +453,6 @@
 
           <details class="proj">
             <summary>
-              <div class="tile pat-control">
-                <span class="tile-expand">+</span>
-                <div class="tile-overlay">
-                  <span class="tile-tag">Controls + ML</span>
-                  <div class="tile-title">ML-Based Control of a Compliant Robotic System</div>
-                </div>
-              </div>
-            </summary>
-            <div class="proj-body">
-              <span class="dt">Feb 2026 – Jun 2026</span>
-              Proposed and partially implemented in Python an ML-driven control framework (Gaussian Process modeling / RL) to extend the reachable workspace of a Cartesian impedance-controlled robot on a compliant base, by exciting its passive degree of freedom.
-              <div class="tags"><span class="tag">Python</span><span class="tag">Controls</span><span class="tag">ML</span></div>
-            </div>
-          </details>
-
-          <details class="proj">
-            <summary>
               <div class="tile pat-topology">
                 <span class="tile-expand">+</span>
                 <div class="tile-overlay">
@@ -483,18 +470,33 @@
 
           <details class="proj">
             <summary>
-              <div class="tile pat-modal">
+              <div class="tile pat-fridge">
                 <span class="tile-expand">+</span>
                 <div class="tile-overlay">
-                  <span class="tile-tag">Structural Testing</span>
-                  <div class="tile-title">Mechanical System Identification via Modal Analysis</div>
+                  <span class="tile-tag">CAD</span>
+                  <div class="tile-title">Refrigerator 3D Drawing Project</div>
                 </div>
               </div>
             </summary>
             <div class="proj-body">
-              <span class="dt">July 2025</span>
-              Conducted experimental and numerical modal analysis on a steel specimen, correlating Finite Element Analysis (FEA) results from Nastran and Abaqus with physical test data to validate the numerical model.
-              <div class="tags"><span class="tag">Nastran</span><span class="tag">Abaqus</span><span class="tag">FEA</span></div>
+              <span class="dt">TBD</span>
+              <span class="soon-badge">Full write-up and photos coming soon.</span>
+            </div>
+          </details>
+
+          <details class="proj">
+            <summary>
+              <div class="tile pat-gripper">
+                <span class="tile-expand">+</span>
+                <div class="tile-overlay">
+                  <span class="tile-tag">Robotics</span>
+                  <div class="tile-title">Soft Robotics Gripper</div>
+                </div>
+              </div>
+            </summary>
+            <div class="proj-body">
+              <span class="dt">TBD</span>
+              <span class="soon-badge">Full write-up and photos coming soon.</span>
             </div>
           </details>
 
