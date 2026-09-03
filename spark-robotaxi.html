@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEKNOFEST Robotaxi — SPARK Team — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --win:#0c0c0d;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.10);
+    --line-soft:rgba(242,240,236,0.06);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+  .frame{ max-width:900px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{ border-bottom:1px solid var(--line); padding:15px 0; }
+  .topbar .frame{ display:flex; align-items:center; justify-content:space-between; max-width:1000px; }
+  .dots{ display:flex; gap:7px; }
+  .dot{ width:9px; height:9px; border-radius:50%; background:var(--muted-dim); }
+  .dot.amber{ background:var(--accent); }
+  .back-link{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.76rem;
+    color:var(--muted);
+    text-decoration:none;
+    letter-spacing:0.02em;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--accent); }
+
+  /* ---------- HERO ---------- */
+  .hero{ max-width:1000px; margin:0 auto; padding:60px 32px 0; }
+  .hero-tag-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:5px 12px;
+  }
+  .hero h1{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:clamp(1.9rem, 4vw, 2.8rem);
+    line-height:1.08;
+    letter-spacing:-0.015em;
+    margin:0 0 14px;
+    text-wrap:balance;
+  }
+  .hero .dt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    color:var(--muted);
+    display:block;
+    margin-bottom:36px;
+  }
+  .cover{
+    width:100%;
+    aspect-ratio:16/9;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#0c0c0d url('spark-team.jpg') center/cover no-repeat;
+    margin-bottom:8px;
+  }
+  .cap{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--muted-dim);
+    text-align:center;
+    margin:10px 0 0;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .section{ padding:56px 0; border-top:1px solid var(--line); }
+  .section h2{
+    font-family:'Sora', sans-serif;
+    font-weight:700;
+    font-size:1.5rem;
+    margin:0 0 18px;
+    letter-spacing:-0.01em;
+  }
+  .section p{ color:var(--muted); margin:0 0 16px; max-width:720px; }
+  .section p:last-child{ margin-bottom:0; }
+
+  .role-note{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 22px;
+    background:var(--win);
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+    margin-top:8px;
+  }
+  .role-note b{ font-weight:600; }
+
+  .img-block{ border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--win); }
+  .img-block img{ width:100%; }
+
+  .gallery{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:20px;
+  }
+
+  .video-wrap{
+    position:relative;
+    width:100%;
+    padding-bottom:56.25%;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .video-wrap iframe{
+    position:absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    border:0;
+  }
+
+  .foot{
+    border-top:1px solid var(--line);
+    padding:36px 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.76rem;
+    color:var(--muted-dim);
+  }
+  .foot a{ color:var(--muted); text-decoration:none; }
+  .foot a:hover{ color:var(--accent); }
+
+  @media (max-width:640px){
+    .gallery{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="frame">
+      <div class="dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot amber"></span>
+      </div>
+      <a class="back-link" href="index.html">← yigiter@portfolio:~$ cd ..</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-tag-row">
+      <span class="tag">Autonomous Vehicles</span>
+      <span class="tag">Mechanical Design</span>
+    </div>
+    <h1>TEKNOFEST Robotaxi — SPARK Team</h1>
+    <span class="dt">Aug 2021 – Aug 2023 · Koç University</span>
+    <div class="cover"></div>
+    <p class="cap">KU AIRS SPARK and the finished vehicle at the TEKNOFEST competition site.</p>
+  </div>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Overview</h2>
+      <p>As part of KU AIRS SPARK, Koç University's team for TEKNOFEST's Full-Scale Autonomous Vehicle Competition, I helped build a fully autonomous car from scratch for the "unique vehicle" category. We were the university's first-ever entrants in the competition, so there was no prior hardware, documentation, or institutional experience to build on — the whole platform was designed and manufactured from a blank sheet. Pandemic-related lab restrictions also meant the team only had physical access to build and test the car in the final two months before the event.</p>
+      <p>Despite that compressed timeline, the car was completed and the team was selected as a finalist at TEKNOFEST 2021, finishing 6th out of 30 competing teams.</p>
+      <div class="role-note">
+        <b>My role:</b> I was responsible for the mechanical design of individual structural parts and for the overall design of the vehicle's outer shell — shaping both how the car was built and how it looked.
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Gallery</h2>
+      <div class="gallery">
+        <div class="img-block">
+          <img src="spark-team.jpg" alt="The SPARK team with the finished autonomous vehicle at TEKNOFEST">
+        </div>
+        <div class="img-block">
+          <img src="spark-chassis.jpg" alt="Close-up of the vehicle's chassis and drivetrain">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <div class="img-block">
+        <img src="spark-certificate.jpg" alt="TEKNOFEST 2021 Robotaxi participation certificate awarded to the team">
+      </div>
+      <p class="cap">Finalist certificate from TEKNOFEST 2021's Robotaxi — Full-Scale Autonomous Vehicle Competition.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Video</h2>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/4t3Za8gGHu8" title="TEKNOFEST Robotaxi — SPARK Team" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div class="frame">
+      <a href="index.html">← Back to all projects</a>
+    </div>
+  </div>
+
+</body>
+</html>
