@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reverse-Engineered Mini Refrigerator — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.10);
+    --line-soft:rgba(242,240,236,0.06);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img, video{ max-width:100%; display:block; }
+  .frame{ max-width:920px; margin:0 auto; padding:0 32px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:14px;
+    display:block;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    background:rgba(5,5,6,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .back-link{
+    text-decoration:none; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.03em;
+    display:flex; align-items:center; gap:8px;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--ink); }
+  .topbar-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted-dim);
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{ padding:64px 0 0; }
+  .hero-top{ max-width:920px; margin:0 auto; padding:0 32px 48px; }
+  .hero-top .kicker{ margin-bottom:20px; }
+  .hero h1{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:clamp(2rem, 4.4vw, 3.1rem);
+    line-height:1.06;
+    letter-spacing:-0.015em;
+    margin:0 0 20px;
+    max-width:17ch;
+  }
+  .hero-sub{ color:var(--muted); font-size:1.08rem; max-width:56ch; margin:0 0 32px; }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:28px; }
+  .meta-item .meta-label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted-dim); display:block; margin-bottom:5px;
+  }
+  .meta-item .meta-value{ font-size:0.9rem; color:var(--ink); }
+  .hero-image{
+    max-width:460px; max-height:580px; margin:0 auto;
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:#0a0a0b;
+  }
+  .hero-image img{ width:100%; height:100%; object-fit:contain; }
+  .hero-caption{
+    max-width:920px; margin:0 auto; padding:14px 32px 0;
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim);
+    text-align:center;
+  }
+
+  /* ---------- SECTION ---------- */
+  .section{ padding:76px 0; border-top:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:36px; }
+  .section-head h2{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:1.65rem;
+    margin:0 0 10px; letter-spacing:-0.01em;
+  }
+  .section-head p{ color:var(--muted); margin:0; }
+  .section p{ color:var(--muted); margin:0 0 16px; max-width:70ch; }
+  .section p:last-child{ margin-bottom:0; }
+  .section strong{ color:var(--ink); font-weight:600; }
+
+  .card-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-top:8px; }
+  .card{ border:1px solid var(--line); border-radius:8px; padding:22px 22px 24px; }
+  .card .card-label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted-dim); display:block; margin-bottom:10px;
+  }
+  .card h3{ font-family:'Sora', sans-serif; font-size:1.02rem; font-weight:600; margin:0 0 8px; }
+  .card p{ color:var(--muted); font-size:0.92rem; margin:0; }
+
+  .fig{ margin:32px 0 0; }
+  .fig img{ width:100%; border-radius:8px; border:1px solid var(--line); background:#0a0a0b; }
+  .fig-cap{
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim);
+    margin-top:10px;
+  }
+  .fig-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:8px; }
+  .fig-grid .fig{ margin-top:0; }
+  @media (max-width:680px){ .fig-grid{ grid-template-columns:1fr; } }
+
+  .note{
+    border-left:2px solid var(--line);
+    padding:14px 22px;
+    margin-top:28px;
+    color:var(--muted-dim);
+    font-size:0.86rem;
+    font-style:italic;
+  }
+
+  .team-section{ padding:80px 0; }
+
+  .foot{
+    border-top:1px solid var(--line);
+    padding:40px 0 60px;
+  }
+  .foot-links{ display:flex; flex-wrap:wrap; gap:24px; margin-bottom:16px; }
+  .foot-links a{
+    text-decoration:none; color:var(--muted); font-size:0.9rem;
+    border-bottom:1px solid transparent; padding-bottom:3px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .foot-links a:hover{ color:var(--ink); border-color:var(--accent); }
+  .foot-note{ color:var(--muted-dim); font-size:0.78rem; }
+
+  @media (max-width:680px){
+    .frame, .hero-top, .hero-caption{ padding-left:22px; padding-right:22px; }
+    .topbar{ padding:16px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="index.html">← Back to portfolio</a>
+  <span class="topbar-tag">Case Study</span>
+</div>
+
+<section class="hero">
+  <div class="hero-top">
+    <span class="kicker">Mechanical Design Course</span>
+    <h1>Reverse-Engineered Mini Refrigerator</h1>
+    <p class="hero-sub">A compact refrigerator, taken apart down to its last screw, measured by hand, and rebuilt piece by piece as a full parametric CAD assembly — including a structural check on the compressor's connecting rod.</p>
+    <div class="meta-row">
+      <div class="meta-item">
+        <span class="meta-label">Institution</span>
+        <span class="meta-value">Koç University</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Timeline</span>
+        <span class="meta-value">~2 months</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Team</span>
+        <span class="meta-value">Group project</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">My role</span>
+        <span class="meta-value">Disassembly, measurement, CAD modeling, FEA</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="fridge-hero.jpg" alt="Isometric CAD render of the mini refrigerator with its door open, showing the interior shelving and door bins">
+  </div>
+  <p class="hero-caption">The final assembly, modeled entirely from measurements taken off the real unit.</p>
+</section>
+
+<section class="section" id="approach">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Approach</span>
+      <h2>Reverse engineering, part by part</h2>
+      <p>Rather than designing a refrigerator from a spec sheet, the brief was to understand one that already exists — by taking it apart.</p>
+    </div>
+    <p>We bought a compact refrigerator and fully disassembled it: cabinet, door, interior shelving, evaporator coil, condenser coil, and compressor unit all came apart into individual components. Each part was measured by hand and modeled in CAD from those measurements, then reassembled digitally into a single parametric model of the whole unit.</p>
+    <p>It was slower than it sounds — some parts (the compressor housing especially) don't have simple, measurable geometry, and the assembly process surfaced a lot of small interference and tolerance issues we hadn't anticipated. Getting every part to actually fit back together in CAD the way it did in reality was most of the work.</p>
+  </div>
+</section>
+
+<section class="section" id="cad">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">CAD Reconstruction</span>
+      <h2>Rebuilding the unit from measurements</h2>
+      <p>The full assembly, modeled from the outer cabinet down to the refrigeration components hidden behind it.</p>
+    </div>
+    <div class="fig-grid">
+      <div class="fig">
+        <img src="fridge-front.jpg" alt="CAD render of the refrigerator's closed front face, showing the door and handle">
+        <div class="fig-cap">Closed front — cabinet and door.</div>
+      </div>
+      <div class="fig">
+        <img src="fridge-cutaway.jpg" alt="Front cutaway CAD render showing the interior shelves, evaporator, and crisper drawer">
+        <div class="fig-cap">Front cutaway — shelving, evaporator, and drawer.</div>
+      </div>
+      <div class="fig">
+        <img src="fridge-back.jpg" alt="Rear CAD render of the refrigerator showing the condenser coil running down the back panel and the compressor at the base">
+        <div class="fig-cap">Rear panel — condenser coil and compressor.</div>
+      </div>
+      <div class="fig">
+        <img src="fridge-compressor.jpg" alt="Cutaway CAD render of the compressor unit, showing the internal motor, crank, and valve assembly">
+        <div class="fig-cap">Compressor — internal motor, crank, and valve assembly.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="analysis">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Structural Check</span>
+      <h2>Stressing the compressor's connecting rod</h2>
+      <p>The compressor's connecting rod links the motor's rotating crank to the piston, so it carries the full operating load on every cycle — a reasonable candidate for a quick structural sanity check.</p>
+    </div>
+    <p>We modeled the rod from the measured compressor geometry and ran a static structural analysis to see how it handled that load. The resulting equivalent (von Mises) stress stayed well below the material's yield strength across the rod, with the highest stress concentrated — as expected — around the small end where it meets the piston pin.</p>
+    <div class="fig">
+      <img src="fridge-stress-analysis.jpg" alt="ANSYS static structural analysis of the compressor connecting rod, showing an equivalent von-Mises stress contour plot">
+      <div class="fig-cap">Equivalent (von Mises) stress distribution on the connecting rod under load.</div>
+    </div>
+    <div class="note">This project predates the more detailed documentation habits behind the later case studies on this site — the renders and this analysis screenshot are what's available from the original files.</div>
+  </div>
+</section>
+
+<section class="team-section">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Reflection</span>
+      <h2>Two months, a lot of trial and error</h2>
+    </div>
+    <p>It was an exhausting but genuinely instructive couple of months — especially the reassembly stage, where more than a few parts didn't fit back together the way we expected on the first (or second) try. Getting there was very much a team effort, and I'm glad to have worked through it with the friends who put just as much into it.</p>
+  </div>
+</section>
+
+<div class="foot">
+  <div class="frame">
+    <div class="foot-links">
+      <a href="index.html">← Back to portfolio</a>
+      <a href="mailto:yigitermuhammedtuncer@gmail.com">yigitermuhammedtuncer@gmail.com</a>
+    </div>
+    <div class="foot-note">© 2026 Yigiter Tuncer — Milano, Italy</div>
+  </div>
+</div>
+
+</body>
+</html>
