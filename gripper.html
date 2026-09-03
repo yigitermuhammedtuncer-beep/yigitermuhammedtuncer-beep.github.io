@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bio-Inspired Soft Gripper — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.10);
+    --line-soft:rgba(242,240,236,0.06);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img, video{ max-width:100%; display:block; }
+  .frame{ max-width:920px; margin:0 auto; padding:0 32px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:14px;
+    display:block;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    background:rgba(5,5,6,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .back-link{
+    text-decoration:none; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.03em;
+    display:flex; align-items:center; gap:8px;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--ink); }
+  .topbar-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted-dim);
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{ padding:64px 0 0; }
+  .hero-top{ max-width:920px; margin:0 auto; padding:0 32px 48px; }
+  .hero-top .kicker{ margin-bottom:20px; }
+  .hero h1{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:clamp(2rem, 4.4vw, 3.1rem);
+    line-height:1.06;
+    letter-spacing:-0.015em;
+    margin:0 0 20px;
+    max-width:15ch;
+  }
+  .hero-sub{ color:var(--muted); font-size:1.08rem; max-width:56ch; margin:0 0 32px; }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:28px; }
+  .meta-item .meta-label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted-dim); display:block; margin-bottom:5px;
+  }
+  .meta-item .meta-value{ font-size:0.9rem; color:var(--ink); }
+  .hero-image{
+    max-width:460px; max-height:560px; margin:0 auto;
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:#0a0a0b;
+  }
+  .hero-image img{ width:100%; height:100%; object-fit:contain; }
+  .hero-caption{
+    max-width:920px; margin:0 auto; padding:14px 32px 0;
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim);
+  }
+
+  /* ---------- SECTION ---------- */
+  .section{ padding:76px 0; border-top:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:36px; }
+  .section-head h2{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:1.65rem;
+    margin:0 0 10px; letter-spacing:-0.01em;
+  }
+  .section-head p{ color:var(--muted); margin:0; }
+  .section p{ color:var(--muted); margin:0 0 16px; max-width:70ch; }
+  .section p:last-child{ margin-bottom:0; }
+  .section strong{ color:var(--ink); font-weight:600; }
+
+  /* card grid for goals / constraints */
+  .card-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-top:8px; }
+  .card{
+    border:1px solid var(--line); border-radius:8px; padding:22px 22px 24px;
+  }
+  .card .card-label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted-dim); display:block; margin-bottom:10px;
+  }
+  .card h3{ font-family:'Sora', sans-serif; font-size:1.02rem; font-weight:600; margin:0 0 8px; }
+  .card p{ color:var(--muted); font-size:0.92rem; margin:0; }
+
+  .callout{
+    border-left:2px solid var(--accent);
+    padding:18px 24px;
+    margin-top:28px;
+    color:var(--ink);
+    font-size:0.98rem;
+    font-style:italic;
+    background:var(--line-soft);
+    border-radius:0 6px 6px 0;
+  }
+
+  /* image blocks */
+  .fig{ margin:32px 0 0; }
+  .fig img, .fig video{ width:100%; border-radius:8px; border:1px solid var(--line); }
+  .fig-cap{
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim);
+    margin-top:10px;
+  }
+  .fig-row{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:32px; }
+  @media (max-width:680px){ .fig-row{ grid-template-columns:1fr; } }
+  .video-embed{ position:relative; width:100%; aspect-ratio:16/9; border-radius:8px; overflow:hidden; border:1px solid var(--line); }
+  .video-embed iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+
+  /* comparison table */
+  table.cmp{ width:100%; border-collapse:collapse; margin-top:28px; font-size:0.9rem; }
+  table.cmp th, table.cmp td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.cmp th{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--muted-dim); font-weight:500;
+  }
+  table.cmp td{ color:var(--muted); }
+  table.cmp td.hl{ color:var(--ink); }
+
+  /* results grid of demo clips */
+  .demo-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:24px; margin-top:8px; max-width:560px; }
+  .demo-item video{ width:100%; border-radius:8px; border:1px solid var(--line); aspect-ratio:9/16; object-fit:cover; }
+  .demo-item .demo-cap{ margin-top:10px; }
+  .demo-item .demo-title{ font-family:'Sora', sans-serif; font-size:0.92rem; font-weight:600; margin-bottom:2px; }
+  .demo-item .demo-meta{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted-dim); }
+
+  /* summary lists */
+  .summary-cols{ display:grid; grid-template-columns:1fr 1fr; gap:0 40px; margin-top:8px; }
+  .summary-cols table.cmp{ margin-top:0; }
+  @media (max-width:680px){ .summary-cols{ grid-template-columns:1fr; } .summary-cols table.cmp:last-child{ margin-top:28px; } }
+
+  ul.plain{ margin:0; padding-left:20px; color:var(--muted); }
+  ul.plain li{ margin-bottom:10px; }
+  ul.plain li:last-child{ margin-bottom:0; }
+  ul.plain strong{ color:var(--ink); }
+
+  /* team / footer */
+  .team-section{ padding:80px 0; }
+  .team-grid{ display:flex; flex-wrap:wrap; gap:12px 28px; margin-top:8px; }
+  .team-member{ font-size:0.92rem; color:var(--ink); }
+  .team-member span{ display:block; font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--muted-dim); margin-top:2px; }
+
+  /* ---------- DOWNLOADS ---------- */
+  .downloads-section{ padding:0 0 80px; }
+  .downloads-card{ border:1px solid var(--line); border-radius:16px; padding:36px; }
+  .downloads-card h2{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:1.6rem;
+    margin:0 0 24px; letter-spacing:-0.01em;
+  }
+  .download-pill{
+    display:inline-flex; align-items:center; gap:10px;
+    text-decoration:none; color:var(--ink);
+    border:1px solid var(--line); border-radius:999px;
+    padding:15px 26px;
+    font-family:'Inter', sans-serif; font-weight:600; font-size:0.92rem;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .download-pill:hover{ border-color:var(--accent); background:var(--line-soft); }
+  .download-pill .dl-type{
+    font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:0.74rem;
+    color:var(--muted-dim); letter-spacing:0.03em;
+  }
+
+  .foot{
+    border-top:1px solid var(--line);
+    padding:40px 0 60px;
+  }
+  .foot-links{ display:flex; flex-wrap:wrap; gap:24px; margin-bottom:16px; }
+  .foot-links a{
+    text-decoration:none; color:var(--muted); font-size:0.9rem;
+    border-bottom:1px solid transparent; padding-bottom:3px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .foot-links a:hover{ color:var(--ink); border-color:var(--accent); }
+  .foot-note{ color:var(--muted-dim); font-size:0.78rem; }
+
+  @media (max-width:680px){
+    .frame, .hero-top, .hero-caption{ padding-left:22px; padding-right:22px; }
+    .topbar{ padding:16px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="index.html">← Back to portfolio</a>
+  <span class="topbar-tag">Case Study</span>
+</div>
+
+<section class="hero">
+  <div class="hero-top">
+    <span class="kicker">Course 059250 — Soft Robotics</span>
+    <h1>Bio-Inspired Soft Gripper</h1>
+    <p class="hero-sub">An underactuated, tendon-driven soft gripper designed to harvest button mushrooms without bruising them — and one motor away from grasping almost anything else on a table.</p>
+    <div class="meta-row">
+      <div class="meta-item">
+        <span class="meta-label">Institution</span>
+        <span class="meta-value">Politecnico di Milano</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Timeline</span>
+        <span class="meta-value">June 2026</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Team</span>
+        <span class="meta-value">Group 7 — 5 members</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">My role</span>
+        <span class="meta-value">CAD design, tribo-skin mold &amp; casting, circuit &amp; testing</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="gripper-hero.jpg" alt="The assembled three-fingered soft gripper, held by hand, with its tendons and servo motor visible above the fingers">
+  </div>
+  <p class="hero-caption">The final build — three underactuated fingers driven by a single servo through a whiffletree.</p>
+</section>
+
+<section class="section" id="problem">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Context &amp; Problem</span>
+      <h2>Why mushrooms are a hard grasping problem</h2>
+      <p>Button mushrooms sit at the difficult end of robotic manipulation: they're irregular, asymmetrical, and damage easily under even modest point loads.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-label">Constraint 01</span>
+        <h3>Low bruising threshold</h3>
+        <p>Past a small pressure limit, the cap tissue ruptures and browns almost immediately — there's very little margin for error in grip force.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Constraint 02</span>
+        <h3>Irregular geometry</h3>
+        <p>No two caps are the same shape, so a rigid, pre-programmed grasp point tends to concentrate force in exactly the wrong place.</p>
+      </div>
+    </div>
+    <div class="callout">The failure of rigid automation in agriculture isn't a speed problem — it's a compliance problem.</div>
+  </div>
+</section>
+
+<section class="section" id="approach">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Motivation &amp; Approach</span>
+      <h2>From top-down suction to a wrapping grasp</h2>
+      <p>Existing mushroom-harvesting robots mostly fall into two camps, chosen by mushroom type: suction cups that lift from the cap, and small pincers that cut at the stem. Both have known failure modes — suction clogs with soil and spores and bruises the cap with localized negative pressure; stem-cutters need precise, per-mushroom alignment.</p>
+    </div>
+    <p>We moved away from both, toward a three-fingered wrapping motion that closes gently around the cap and distributes pressure across the whole contact surface rather than a single point — closer to how a hand cups a fragile object than how a suction nozzle grabs one.</p>
+    <div class="fig">
+      <div class="video-embed">
+        <iframe src="https://www.youtube.com/embed/KlZc8Haj96A" title="Forager HX800 mushroom harvester" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      <div class="fig-cap">The Forager HX800 — the commercial mushroom-picking robot whose optimized top-down trimming motion we studied, and moved away from, toward a wrapping grasp.</div>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-label">Goal 01</span>
+        <h3>Passive adaptation</h3>
+        <p>Let the finger geometry itself do the conforming, instead of adding sensor feedback loops — the material is the controller.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Goal 02</span>
+        <h3>Pressure homogenization</h3>
+        <p>Spread contact stress evenly across the cap surface so no single point takes enough load to bruise it.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Goal 03</span>
+        <h3>Underactuated simplicity</h3>
+        <p>Drive all three fingers from a single motor, keeping the mechanism — and its failure modes — simple.</p>
+      </div>
+    </div>
+    <div class="callout">Research question: how can an underactuated soft morphology combine force-isotropic tendon routing with tuned surface friction to achieve a secure, zero-bruise grasp on irregular, sensitive targets?</div>
+  </div>
+</section>
+
+<section class="section" id="cad">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">CAD Design</span>
+      <h2>Tendon routing, tribo-skin, and finger geometry</h2>
+      <p>We compared serial and parallel tendon routing before settling on a single-actuator whiffletree — one cable pulling three fingers through a small triangular plate, keeping the pulling force isotropic across all three.</p>
+    </div>
+    <p>To increase grip without increasing clamp force, we gave the fingertips a pyramidal surface texture — a tribo-skin — which maximizes contact area and friction. It's the same idea used in fingerprint-inspired soft-robot skins: more surface contact, more friction, without pressing any harder.</p>
+    <div class="fig">
+      <img src="gripper-tribo-skin.jpg" alt="Close-up of the cast silicone tribo-skin texture, showing the small pyramidal ridges molded into the fingertip">
+      <div class="fig-cap">Cast pyramidal tribo-skin texture on a fingertip — the pattern that increases friction and grip without added clamp force.</div>
+    </div>
+    <p style="margin-top:32px;">The finger itself went through two iterations. The first version used a rigid segmented cross-section; the final version replaced it with a continuous variable cross-section — softer where it needs to bend, stiffer where it needs to hold — closing more like a real finger and gripping small, round objects without them slipping out.</p>
+    <div class="fig">
+      <img src="gripper-cad-render.png" alt="CAD render of the complete gripper assembly, showing the three fingers, the whiffletree mechanism, and the servo mount">
+      <div class="fig-cap">Full assembly — servo and whiffletree at the top, three tendon-driven fingers below.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="circuit">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Circuit</span>
+      <h2>A four-part control loop</h2>
+    </div>
+    <div class="fig">
+      <img src="gripper-servo-pulley.jpg" alt="The servo motor mounted to the 3D-printed pulley, with the tendon cable wound around it, held in hand">
+      <div class="fig-cap">Digital servo and pulley — the single actuator that drives all three fingers through the whiffletree.</div>
+    </div>
+    <div class="card-grid" style="margin-top:32px;">
+      <div class="card">
+        <span class="card-label">Input</span>
+        <h3>Potentiometer</h3>
+        <p>A twistable knob acting as a variable resistor, giving manual control over how far the fingers close.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Controller</span>
+        <h3>Arduino Uno</h3>
+        <p>Reads the potentiometer voltage, converts it into a target angle, and sends the servo a control signal.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Actuator</span>
+        <h3>Digital servo</h3>
+        <p>Rotates its arm on command, pulling the tendon through the whiffletree and closing the fingers.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Power</span>
+        <h3>4× AA batteries</h3>
+        <p>Supplies 6V directly to the servo, kept isolated from the Arduino's own supply.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="materials">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Materials &amp; Methods</span>
+      <h2>Why the fingers are cast in two layers</h2>
+      <p>No single silicone solves every constraint at once, so each finger is cast from two different materials doing two different jobs.</p>
+    </div>
+    <div class="fig">
+      <img src="gripper-material-fingers.jpg" alt="Several cast silicone finger prototypes side by side, comparing the blue Smooth-Sil test piece against the final white Dragon Skin fingers with their tendon lines">
+      <div class="fig-cap">Early casting tests — comparing Smooth-Sil (blue) against Dragon Skin (white) as the finger's structural body.</div>
+    </div>
+    <table class="cmp" style="margin-top:32px;">
+      <tr><th>Property</th><th>Smooth-Sil body</th><th>Dragon Skin body</th></tr>
+      <tr><td class="hl">Stiffness</td><td>High — rigid, needs more force to wrap</td><td>Medium — flexes smoothly around objects</td></tr>
+      <tr><td class="hl">Load behaviour</td><td>Lifts heavier objects without buckling</td><td>Holds its structure without tearing</td></tr>
+      <tr><td class="hl">Status</td><td>Promising for a future heavy-lift version</td><td>Chosen baseline — worked well on the first cast</td></tr>
+    </table>
+    <p style="margin-top:24px;">For the skin layer, Ecoflex 00-35 Fast reproduced the fine pyramidal tribo-skin texture far more cleanly than the stiffer Ecoflex 10, which struggled to fill the small mold cavities and left the pattern soft and rounded.</p>
+    <p><strong>The result is a two-layer finger:</strong> a Dragon Skin core that flexes passively and resists buckling under load, wrapped in an ultra-soft, high-friction Ecoflex 00-35 skin that grips gently but securely.</p>
+  </div>
+</section>
+
+<section class="section" id="results">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Results</span>
+      <h2>From mushrooms to everything else on the desk</h2>
+      <p>The gripper held the target mushroom with no visible bruising across repeated attempts, then kept working when we started testing whatever was lying around the lab.</p>
+    </div>
+    <div class="fig">
+      <img src="gripper-mushroom-grasp.jpg" alt="The gripper holding a real button mushroom by the stem, with more mushrooms waiting on the table below">
+      <div class="fig-cap">Target case — the fingers conform passively to the cap with no damage to the mushroom.</div>
+    </div>
+
+    <div class="section-head" style="margin-top:48px;">
+      <h2 style="font-size:1.25rem;">Experimental demonstration</h2>
+      <p>A compilation of grasp attempts across the full object set, weight labels included.</p>
+    </div>
+    <div class="demo-grid">
+      <div class="demo-item">
+        <video src="gripper-success-attempts.mp4" controls playsinline muted loop></video>
+        <div class="demo-cap"><div class="demo-title">Success attempts</div><div class="demo-meta">Mushroom, fruit, bottles &amp; daily objects</div></div>
+      </div>
+      <div class="demo-item">
+        <video src="gripper-failure-attempts.mp4" controls playsinline muted loop></video>
+        <div class="demo-cap"><div class="demo-title">Failure attempts</div><div class="demo-meta">Small, rigid objects slipping through the finger gap</div></div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:56px;">
+      <h2 style="font-size:1.25rem;">Successful grasps, by object</h2>
+      <p>Everything below was picked up and held without slipping or crushing, at the object's natural resting orientation.</p>
+    </div>
+    <div class="summary-cols">
+      <table class="cmp">
+        <tr><th>Object</th><th>Weight</th><th>Attempts</th></tr>
+        <tr><td class="hl">Mushroom</td><td>17 g</td><td>1</td></tr>
+        <tr><td class="hl">Cherry</td><td>10 g</td><td>1</td></tr>
+        <tr><td class="hl">Apricot</td><td>31 g</td><td>5</td></tr>
+        <tr><td class="hl">Strawberry</td><td>17 g</td><td>2</td></tr>
+        <tr><td class="hl">Basil</td><td>4 g</td><td>1</td></tr>
+        <tr><td class="hl">Cherry tomato</td><td>11 g</td><td>5</td></tr>
+        <tr><td class="hl">Grape</td><td>7 g</td><td>1</td></tr>
+        <tr><td class="hl">Blueberry</td><td>3 g</td><td>2</td></tr>
+        <tr><td class="hl">Ketchup bottle</td><td>73 g</td><td>4</td></tr>
+      </table>
+      <table class="cmp">
+        <tr><th>Object</th><th>Weight</th><th>Attempts</th></tr>
+        <tr><td class="hl">Water bottle</td><td>142 g</td><td>1</td></tr>
+        <tr><td class="hl">Tuna can</td><td>87 g</td><td>1</td></tr>
+        <tr><td class="hl">Power adapter</td><td>86 g</td><td>1</td></tr>
+        <tr><td class="hl">Sunglasses case</td><td>62 g</td><td>1</td></tr>
+        <tr><td class="hl">Coffee cup</td><td>4 g</td><td>1</td></tr>
+        <tr><td class="hl">Beverage can</td><td>14 g</td><td>1</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="improvements">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Limitations &amp; Next Steps</span>
+      <h2>Where it still fails, and what would fix it</h2>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-label">Failure mode</span>
+        <h3>Objects fall through the gap</h3>
+        <p>Anything smaller than the finger aperture can slip into the dead zone between fingers instead of being caught.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Failure mode</span>
+        <h3>Weak fingertip grip</h3>
+        <p>The tip has no Dragon Skin backbone behind it, so it can't press hard enough to generate reliable friction on its own.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Failure mode</span>
+        <h3>Off-center contact</h3>
+        <p>Gripping above an object's center of mass makes the hold unstable on rigid, tapered shapes.</p>
+      </div>
+    </div>
+    <p style="margin-top:32px;"><strong>Planned improvements:</strong> add soft webbing between fingers to close the dead zone, deepen the tip texture so it grips with less applied force, route tendons through low-friction tubing to preserve more of the servo's pulling force, and offer a stiffer Smooth-Sil finger variant for heavier, rigid loads.</p>
+  </div>
+</section>
+
+<section class="team-section">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Team</span>
+      <h2>Group 7</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-member">Yigiter Tuncer</div>
+      <div class="team-member">Lim Thierry</div>
+      <div class="team-member">Yuxuan Lu</div>
+      <div class="team-member">Sajedeh Mazinani</div>
+      <div class="team-member">Xiheng Li</div>
+    </div>
+  </div>
+</section>
+
+<section class="downloads-section">
+  <div class="frame">
+    <div class="downloads-card">
+      <h2>Downloads</h2>
+      <a class="download-pill" href="gripper-presentation.pdf" download>
+        Presentation <span class="dl-type">PDF</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="foot">
+  <div class="frame">
+    <div class="foot-links">
+      <a href="index.html">← Back to portfolio</a>
+      <a href="mailto:yigitermuhammedtuncer@gmail.com">yigitermuhammedtuncer@gmail.com</a>
+    </div>
+    <div class="foot-note">© 2026 Yigiter Tuncer — Milano, Italy</div>
+  </div>
+</div>
+
+</body>
+</html>
