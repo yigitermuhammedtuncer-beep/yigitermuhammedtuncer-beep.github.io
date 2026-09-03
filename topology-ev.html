@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topology Optimization of an EV Hub Carrier — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --win:#0c0c0d;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.10);
+    --line-soft:rgba(242,240,236,0.06);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+  .frame{ max-width:900px; margin:0 auto; padding:0 32px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:14px;
+    display:block;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    border-bottom:1px solid var(--line);
+    padding:15px 0;
+  }
+  .topbar .frame{ display:flex; align-items:center; justify-content:space-between; max-width:1000px; }
+  .dots{ display:flex; gap:7px; }
+  .dot{ width:9px; height:9px; border-radius:50%; background:var(--muted-dim); }
+  .dot.amber{ background:var(--accent); }
+  .back-link{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.76rem;
+    color:var(--muted);
+    text-decoration:none;
+    letter-spacing:0.02em;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--accent); }
+
+  /* ---------- HERO ---------- */
+  .hero{ max-width:1000px; margin:0 auto; padding:60px 32px 0; }
+  .hero-tag-row{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+  .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:5px 12px;
+  }
+  .hero h1{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:clamp(1.9rem, 4vw, 2.8rem);
+    line-height:1.08;
+    letter-spacing:-0.015em;
+    margin:0 0 14px;
+    text-wrap:balance;
+  }
+  .hero .dt{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.8rem;
+    color:var(--muted);
+    display:block;
+    margin-bottom:36px;
+  }
+  .cover{
+    width:100%;
+    aspect-ratio:16/8;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:#0c0c0d url('draw_constraint.png') center/contain no-repeat;
+    margin-bottom:8px;
+  }
+  .cap{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--muted-dim);
+    text-align:center;
+    margin:10px 0 0;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .section{ padding:64px 0; border-top:1px solid var(--line); }
+  .section h2{
+    font-family:'Sora', sans-serif;
+    font-weight:700;
+    font-size:1.5rem;
+    margin:0 0 18px;
+    letter-spacing:-0.01em;
+  }
+  .section p{ color:var(--muted); margin:0 0 16px; max-width:720px; }
+  .section p:last-child{ margin-bottom:0; }
+  .section ul{ color:var(--muted); padding-left:20px; margin:0 0 16px; }
+  .section li{ margin-bottom:6px; }
+
+  /* image blocks */
+  .img-block{ border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--win); }
+  .img-block img{ width:100%; }
+
+  .load-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    margin-top:8px;
+  }
+  .load-card{ border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--win); }
+  .load-card img{ width:100%; aspect-ratio:4/3; object-fit:cover; }
+  .load-card .load-label{
+    padding:12px 14px;
+  }
+  .load-card .load-name{
+    font-family:'Sora', sans-serif;
+    font-weight:600;
+    font-size:0.92rem;
+    margin-bottom:4px;
+  }
+  .load-card .load-vals{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--muted);
+    letter-spacing:0.01em;
+  }
+
+  .two-col{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+
+  .result-stack{ display:flex; flex-direction:column; gap:24px; }
+
+  /* ---------- DOWNLOADS ---------- */
+  .downloads-card{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:28px;
+    background:var(--win);
+  }
+  .downloads-card h2{ margin-bottom:20px; }
+  .dl-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:var(--ink);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:12px 20px;
+    font-family:'Inter', sans-serif;
+    font-size:0.9rem;
+    font-weight:500;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .dl-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .dl-btn .dl-ext{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    color:var(--muted-dim);
+    text-transform:uppercase;
+  }
+  .dl-note{ font-size:0.85rem; color:var(--muted-dim); margin-top:14px; max-width:600px; }
+
+  /* ---------- FOOTER ---------- */
+  .foot{
+    border-top:1px solid var(--line);
+    padding:36px 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.76rem;
+    color:var(--muted-dim);
+  }
+  .foot a{ color:var(--muted); text-decoration:none; }
+  .foot a:hover{ color:var(--accent); }
+
+  @media (max-width:720px){
+    .load-grid{ grid-template-columns:repeat(2, 1fr); }
+    .two-col{ grid-template-columns:1fr; }
+  }
+  @media (max-width:520px){
+    .load-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="frame">
+      <div class="dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot amber"></span>
+      </div>
+      <a class="back-link" href="index.html">← yigiter@portfolio:~$ cd ..</a>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-tag-row">
+      <span class="tag">FEA</span>
+      <span class="tag">Topology Optimization</span>
+      <span class="tag">HyperWorks / OptiStruct</span>
+    </div>
+    <h1>Topology Optimization of an EV Hub Carrier</h1>
+    <span class="dt">September 2025 · Structural / FEA</span>
+    <div class="cover"></div>
+    <p class="cap">Baseline geometry of the hub carrier, with the bolt-hole interfaces highlighted in red.</p>
+  </div>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Overview</h2>
+      <p>The hub carrier connects the wheel assembly to the suspension of an ultra-efficient, lightweight battery-electric vehicle built for endurance racing (Shell Eco-marathon class). Every gram removed from an unsprung component like this directly improves efficiency, so the goal was to use FEA-based topology optimization to strip the part down to the minimum mass that still survives the full range of operating loads — without compromising stiffness or structural integrity.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <div class="img-block">
+        <img src="asteria_arac.jpg" alt="The Shell Eco-marathon vehicle the hub carrier was designed for">
+      </div>
+      <p class="cap">The vehicle the carrier was designed for, on track at the Shell Eco-marathon.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Load cases</h2>
+      <p>A single static load case isn't enough to certify a suspension component — the carrier has to survive braking, cornering, and impact events too. Six representative load cases were derived and applied at the hub interface to cover the part's full operating envelope:</p>
+      <div class="load-grid">
+        <div class="load-card">
+          <img src="yuk1_rolling.jpg" alt="Rolling load case">
+          <div class="load-label">
+            <div class="load-name">Rolling</div>
+            <div class="load-vals">400 N</div>
+          </div>
+        </div>
+        <div class="load-card">
+          <img src="yuk2_braking.jpg" alt="Braking load case">
+          <div class="load-label">
+            <div class="load-name">Braking</div>
+            <div class="load-vals">350 N · 350 N · 200 N · 1300 N</div>
+          </div>
+        </div>
+        <div class="load-card">
+          <img src="yuk3_internalturn.jpg" alt="Internal turn load case">
+          <div class="load-label">
+            <div class="load-name">Internal Turn</div>
+            <div class="load-vals">60 Nm · 4 Nm · 200 N · 300 N</div>
+          </div>
+        </div>
+        <div class="load-card">
+          <img src="yuk4_external_turn.jpg" alt="External turn load case">
+          <div class="load-label">
+            <div class="load-name">External Turn</div>
+            <div class="load-vals">60 Nm · 4 Nm · 200 N · 500 N</div>
+          </div>
+        </div>
+        <div class="load-card">
+          <img src="yuk5_internal_obstacle.jpg" alt="Internal obstacle load case">
+          <div class="load-label">
+            <div class="load-name">Internal Obstacle</div>
+            <div class="load-vals">150 Nm · 500 N · 500 N · 1000 N</div>
+          </div>
+        </div>
+        <div class="load-card">
+          <img src="yuk6_external_obstacle.jpg" alt="External obstacle load case">
+          <div class="load-label">
+            <div class="load-name">External Obstacle</div>
+            <div class="load-vals">150 Nm · 500 N · 500 N · 1000 N</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Constraints &amp; setup</h2>
+      <p>The three mounting interfaces were constrained to match how the carrier actually attaches to the suspension: a full 3D pin at one bolt group, a pin in the XY plane at another, and a roller allowing motion only along Y at the third — reproducing a statically determinate, realistic support condition for the optimization run.</p>
+      <div class="img-block">
+        <img src="constraints.jpg" alt="Boundary conditions applied to the hub carrier: full pin, XY pin, and roller supports">
+      </div>
+      <p class="cap">Support definitions at each mounting interface.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Optimization results</h2>
+      <p>Running the density-based topology optimization across all six load cases converged on a clear, efficient load path: material consolidated around the bolt bosses and the primary load-carrying ribs, while low-density regions elsewhere were candidates for removal.</p>
+      <div class="two-col">
+        <div class="img-block"><img src="contour_2.jpg" alt="Element density contour plot, view 1"></div>
+        <div class="img-block"><img src="contour1.jpg" alt="Element density contour plot, view 2"></div>
+      </div>
+      <p class="cap">Element density results (red = retain material, blue = remove) from two viewing angles.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <div class="img-block">
+        <img src="convergence.png" alt="Convergence plot of the topology optimization across 27 iterations">
+      </div>
+      <p class="cap">The objective function converged smoothly over 27 iterations.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <h2>Final geometry</h2>
+      <p>The optimized density field was interpreted into a manufacturable shape, keeping the high-density load paths and removing the rest — reducing mass while preserving stiffness at every constrained interface.</p>
+      <div class="result-stack">
+        <div class="img-block"><img src="Isometric_View.jpg" alt="Isometric view of the optimized hub carrier"></div>
+        <div class="two-col">
+          <div class="img-block"><img src="Screenshot_1.jpg" alt="Optimized hub carrier detail view"></div>
+          <div class="img-block"><img src="Side_View.jpg" alt="Side, clipped view of the optimized internal structure"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="frame">
+      <div class="downloads-card">
+        <h2>Downloads</h2>
+        <a class="dl-btn" href="Topology_Project_4.pdf" target="_blank" rel="noopener">
+          Technical report <span class="dl-ext">PDF</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <div class="frame">
+      <a href="index.html">← Back to all projects</a>
+    </div>
+  </div>
+
+</body>
+</html>
