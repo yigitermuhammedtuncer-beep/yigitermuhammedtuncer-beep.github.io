@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheels in Motion — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.10);
+    --line-soft:rgba(242,240,236,0.06);
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img, video{ max-width:100%; display:block; }
+  .frame{ max-width:920px; margin:0 auto; padding:0 32px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:14px;
+    display:block;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    background:rgba(5,5,6,0.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .back-link{
+    text-decoration:none; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.03em;
+    display:flex; align-items:center; gap:8px;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--ink); }
+  .topbar-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted-dim);
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{ padding:64px 0 0; }
+  .hero-top{ max-width:920px; margin:0 auto; padding:0 32px 48px; }
+  .hero-top .kicker{ margin-bottom:20px; }
+  .hero h1{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:clamp(2rem, 4.4vw, 3.1rem);
+    line-height:1.06;
+    letter-spacing:-0.015em;
+    margin:0 0 20px;
+    max-width:17ch;
+  }
+  .hero-sub{ color:var(--muted); font-size:1.08rem; max-width:56ch; margin:0 0 32px; }
+  .meta-row{ display:flex; flex-wrap:wrap; gap:28px; }
+  .meta-item .meta-label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--muted-dim); display:block; margin-bottom:5px;
+  }
+  .meta-item .meta-value{ font-size:0.9rem; color:var(--ink); }
+  .hero-image{
+    max-width:460px; max-height:580px; margin:0 auto;
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:#0a0a0b;
+  }
+  .hero-image img{ width:100%; height:100%; object-fit:contain; }
+  .hero-caption{
+    max-width:920px; margin:0 auto; padding:14px 32px 0;
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim);
+    text-align:center;
+  }
+
+  /* ---------- SECTION ---------- */
+  .section{ padding:76px 0; border-top:1px solid var(--line); }
+  .section-head{ max-width:640px; margin-bottom:36px; }
+  .section-head h2{
+    font-family:'Sora', sans-serif; font-weight:700; font-size:1.65rem;
+    margin:0 0 10px; letter-spacing:-0.01em;
+  }
+  .section-head p{ color:var(--muted); margin:0; }
+  .section p{ color:var(--muted); margin:0 0 16px; max-width:70ch; }
+  .section p:last-child{ margin-bottom:0; }
+  .section strong{ color:var(--ink); font-weight:600; }
+
+  .card-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px; margin-top:8px; }
+  .card{ border:1px solid var(--line); border-radius:8px; padding:22px 22px 24px; }
+  .card .card-label{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted-dim); display:block; margin-bottom:10px;
+  }
+  .card h3{ font-family:'Sora', sans-serif; font-size:1.02rem; font-weight:600; margin:0 0 8px; }
+  .card p{ color:var(--muted); font-size:0.92rem; margin:0; }
+
+  .fig{ margin:32px 0 0; }
+  .fig img, .fig video{ width:100%; border-radius:8px; border:1px solid var(--line); background:#0a0a0b; }
+  .fig-cap{
+    font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim);
+    margin-top:10px;
+  }
+  .fig-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:8px; }
+  .fig-grid .fig{ margin-top:0; }
+  @media (max-width:680px){ .fig-grid{ grid-template-columns:1fr; } }
+
+  .video-embed{ max-width:340px; margin:0 auto; }
+  .video-embed video{ width:100%; border-radius:8px; border:1px solid var(--line); aspect-ratio:9/16; object-fit:cover; }
+
+  table.cmp{ width:100%; border-collapse:collapse; margin-top:28px; font-size:0.9rem; }
+  table.cmp th, table.cmp td{ text-align:left; padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.cmp th{
+    font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--muted-dim); font-weight:500;
+  }
+  table.cmp td{ color:var(--muted); }
+  table.cmp td.hl{ color:var(--ink); }
+
+  ul.plain{ margin:0; padding-left:20px; color:var(--muted); }
+  ul.plain li{ margin-bottom:10px; }
+  ul.plain li:last-child{ margin-bottom:0; }
+  ul.plain strong{ color:var(--ink); }
+
+  .team-section{ padding:80px 0; }
+  .team-grid{ display:flex; flex-wrap:wrap; gap:12px 28px; margin-top:8px; }
+  .team-member{ font-size:0.92rem; color:var(--ink); }
+
+  /* ---------- DOWNLOADS ---------- */
+  .downloads-section{ padding:0 0 80px; }
+  .downloads-card{ border:1px solid var(--line); border-radius:16px; padding:36px; }
+  .downloads-card h2{
+    font-family:'Sora', sans-serif; font-weight:800; font-size:1.6rem;
+    margin:0 0 24px; letter-spacing:-0.01em;
+  }
+  .download-pill{
+    display:inline-flex; align-items:center; gap:10px;
+    text-decoration:none; color:var(--ink);
+    border:1px solid var(--line); border-radius:999px;
+    padding:15px 26px;
+    font-family:'Inter', sans-serif; font-weight:600; font-size:0.92rem;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .download-pill:hover{ border-color:var(--accent); background:var(--line-soft); }
+  .download-pill .dl-type{
+    font-family:'IBM Plex Mono', monospace; font-weight:400; font-size:0.74rem;
+    color:var(--muted-dim); letter-spacing:0.03em;
+  }
+
+  .foot{
+    border-top:1px solid var(--line);
+    padding:40px 0 60px;
+  }
+  .foot-links{ display:flex; flex-wrap:wrap; gap:24px; margin-bottom:16px; }
+  .foot-links a{
+    text-decoration:none; color:var(--muted); font-size:0.9rem;
+    border-bottom:1px solid transparent; padding-bottom:3px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .foot-links a:hover{ color:var(--ink); border-color:var(--accent); }
+  .foot-note{ color:var(--muted-dim); font-size:0.78rem; }
+
+  @media (max-width:680px){
+    .frame, .hero-top, .hero-caption{ padding-left:22px; padding-right:22px; }
+    .topbar{ padding:16px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="index.html">← Back to portfolio</a>
+  <span class="topbar-tag">Case Study</span>
+</div>
+
+<section class="hero">
+  <div class="hero-top">
+    <span class="kicker">MECH 491 — Mechanical Engineering Design</span>
+    <h1>Wheels in Motion</h1>
+    <p class="hero-sub">A capstone project: a retrofit kit that turns an ordinary manual wheelchair into a joystick-driven electric one in under 20 seconds — built from a repurposed hoverboard and a secondhand wheelchair.</p>
+    <div class="meta-row">
+      <div class="meta-item">
+        <span class="meta-label">Institution</span>
+        <span class="meta-value">Koç University</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Team</span>
+        <span class="meta-value">Yigiter Tuncer, Yusuf Cebeci, Taha Yusuf Yücetürk</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Supervisor</span>
+        <span class="meta-value">Çağatay Başdoğan</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">My role</span>
+        <span class="meta-value">Mechanical design, mounts &amp; CAD, structural analysis</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="wheelchair-hero.jpg" alt="Close-up of the hoverboard drive unit being clamped onto a manual wheelchair's frame during the under-20-second retrofit">
+  </div>
+  <p class="hero-caption">Attaching a drive unit — the entire retrofit takes under 20 seconds per side.</p>
+</section>
+
+<section class="section" id="goals">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Brief</span>
+      <h2>A kit, not a new wheelchair</h2>
+      <p>Powered wheelchairs are expensive, and most manual wheelchair users can't easily switch to one. The brief was to close that gap without replacing the chair itself.</p>
+    </div>
+    <p>Instead of designing a motorized wheelchair from scratch, we designed an add-on kit: a pair of repurposed hoverboard hub motors, custom 3D-printed mounts, and a Bluetooth joystick controller that clamp onto almost any standard manual wheelchair and can be removed just as fast — switching the user between manual and powered modes in under 20 seconds.</p>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-label">Constraint</span>
+        <h3>Fast, tool-free retrofit</h3>
+        <p>Attach or remove both drive units in under 20 seconds, with no permanent modification to the donor wheelchair.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Constraint</span>
+        <h3>Cost-effective by reuse</h3>
+        <p>Built around a repurposed hoverboard and a secondhand manual wheelchair, keeping the kit itself cheap to reproduce.</p>
+      </div>
+      <div class="card">
+        <span class="card-label">Constraint</span>
+        <h3>Safety &amp; adaptability</h3>
+        <p>Adjustable mounts to fit most manual wheelchair frames, with a sealed, weatherproof electronics enclosure.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="demo">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Demonstration</span>
+      <h2>Retrofit and ride</h2>
+      <p>The full sequence: clamping both drive units onto the wheelchair, then driving it by joystick.</p>
+    </div>
+    <div class="video-embed">
+      <video src="wheelchair-demo.mp4" controls playsinline muted loop></video>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="cad">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Mechanical Design</span>
+      <h2>Mounts built to clamp, not bolt</h2>
+      <p>The whole kit hangs off two 3D-printed mount assemblies that clip onto the wheelchair's existing frame tubing — no drilling, no permanent fasteners.</p>
+    </div>
+    <div class="fig-grid">
+      <div class="fig">
+        <img src="wheelchair-cad-full.jpg" alt="Full CAD assembly of the wheelchair with the drive kit mounted at the rear axle">
+        <div class="fig-cap">Full assembly — drive units mounted at the rear axle.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-cad-kit.jpg" alt="Close-up CAD render of the retrofit kit's mounting bracket and drive motor housing">
+        <div class="fig-cap">Kit closeup — mounting bracket and motor housing.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-exploded.jpg" alt="Exploded CAD view of the mount assembly showing the fixed and slideable contact points on the frame tubing">
+        <div class="fig-cap">Exploded view — clip geometry around the frame tubing.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-main-mount.jpg" alt="Photo of a 3D-printed main mount clipped onto the wheelchair's frame tube">
+        <div class="fig-cap">3D-printed main mount, clipped onto the frame.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="electronics">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Electronics</span>
+      <h2>Repurposing a hoverboard's drivetrain</h2>
+      <p>Rather than sourcing new BLDC motors and a motor controller, we salvaged both directly from a hoverboard — its self-balancing electronics already knew how to drive two hub motors smoothly.</p>
+    </div>
+    <div class="fig">
+      <img src="wheelchair-motor-teardown.jpg" alt="Hoverboard being disassembled to extract its BLDC hub motor and mainboard">
+      <div class="fig-cap">Salvaging the hub motor and mainboard from a hoverboard.</div>
+    </div>
+    <p style="margin-top:32px;">The stock hoverboard controller expects a rider leaning on a self-balancing platform, not a joystick — so we bridged the two with a pair of ESP32 boards. One reads the joystick and transmits over Bluetooth; the other sits in the controller box and feeds that signal into the hoverboard mainboard, which drives the two BLDC motors as normal.</p>
+    <div class="fig">
+      <img src="wheelchair-system-diagram.jpg" alt="System diagram: joystick and ESP32 connect over Bluetooth to a controller box containing the hoverboard mainboard, a second ESP32, voltage regulator, and battery, which drive two BLDC motors">
+      <div class="fig-cap">Signal path — joystick → ESP32 → Bluetooth → hoverboard mainboard → motors.</div>
+    </div>
+    <div class="fig-grid" style="margin-top:32px;">
+      <div class="fig">
+        <img src="wheelchair-controller-box.jpg" alt="The sealed controller box mounted at the rear of the wheelchair, with an LED indicator for Bluetooth connection status">
+        <div class="fig-cap">Controller box — blinking LED while pairing, solid once connected.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-waterproof-box.jpg" alt="IP65-rated waterproof enclosure housing the electronics, mounted between the rear wheels">
+        <div class="fig-cap">IP65 enclosure — dust-tight and rain-resistant.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="details">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Designed Elements</span>
+      <h2>Smaller parts, same fast-retrofit logic</h2>
+    </div>
+    <div class="fig-grid">
+      <div class="fig">
+        <img src="wheelchair-spring-system.jpg" alt="A spring and thrust bearing on the wheel axle, absorbing shock as the wheelchair moves over uneven ground">
+        <div class="fig-cap">Spring + thrust bearing on each drive wheel, for shock absorption.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-joystick-casing.jpg" alt="3D-printed joystick casing prototype">
+        <div class="fig-cap">3D-printed joystick casing.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-secondary-mount.jpg" alt="3D-printed secondary mount bracket being hand-fitted onto a wheelchair tube">
+        <div class="fig-cap">Secondary mount, fitted by hand.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-kit-mounted.jpg" alt="The assembled retrofit kit mounted onto the wheelchair frame, wired and ready to test">
+        <div class="fig-cap">Kit fully mounted and wired for testing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="analysis">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Technical Analysis</span>
+      <h2>Load, force, and a structural check</h2>
+      <p>With a 73 kg seated rider, the 17.3 kg wheelchair, and 9 kg of hoverboard motors — 103 kg total — we worked out how that load splits front-to-rear and what force the drive system needs to overcome.</p>
+    </div>
+    <table class="cmp">
+      <tr><th>Quantity</th><th>Value</th></tr>
+      <tr><td class="hl">Total weight (rider + chair + motors)</td><td>103 kg</td></tr>
+      <tr><td class="hl">Front wheel load</td><td>≈ 34.3 kg</td></tr>
+      <tr><td class="hl">Rear wheel load (drive side)</td><td>≈ 68.7 kg</td></tr>
+      <tr><td class="hl">Rolling friction force</td><td>≈ 20 N</td></tr>
+      <tr><td class="hl">Force at target acceleration (1.7 m/s)</td><td>≈ 175 N</td></tr>
+      <tr><td class="hl">Net force the drive system must overcome</td><td>≈ 20 kg-equivalent</td></tr>
+    </table>
+    <p style="margin-top:24px;">We then ran a static structural FEA on the mount assembly under these loads — fixed supports at the frame-clamp points, with 100 N and 150 N loads applied where the motor housings hang off the bracket.</p>
+    <div class="fig-grid">
+      <div class="fig">
+        <img src="wheelchair-stress-analysis.jpg" alt="ANSYS static structural stress analysis of the mount assembly, showing a maximum equivalent stress of 23.19 MPa">
+        <div class="fig-cap">Peak equivalent stress: 23.19 MPa, well under the mount material's yield strength.</div>
+      </div>
+      <div class="fig">
+        <img src="wheelchair-displacement-analysis.jpg" alt="ANSYS displacement analysis of the mount assembly, showing a maximum displacement of 0.077 mm">
+        <div class="fig-cap">Peak displacement: 0.077 mm — negligible flex under load.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="team-section">
+  <div class="frame">
+    <div class="section-head">
+      <span class="kicker">Outcome</span>
+      <h2>What shipped, and what's next</h2>
+    </div>
+    <p>The prototype hit the brief: both drive units attach or detach in under 20 seconds, the kit fits most manual wheelchair frames through its adjustable mounts, and the electronics stayed sealed and functional through testing. The structural analysis confirmed the mounts hold up comfortably under the rider's weight, with stress and displacement well inside safe margins.</p>
+    <p>The obvious next steps are refining the mount for a wider range of frame geometries, and iterating on battery life and ride comfort with real users — the kind of feedback that's hard to get from a single capstone semester.</p>
+    <div class="section-head" style="margin-top:48px;">
+      <span class="kicker">Team</span>
+      <h2>Group</h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-member">Yigiter Tuncer</div>
+      <div class="team-member">Yusuf Cebeci</div>
+      <div class="team-member">Taha Yusuf Yücetürk</div>
+    </div>
+  </div>
+</section>
+
+<section class="downloads-section">
+  <div class="frame">
+    <div class="downloads-card">
+      <h2>Downloads</h2>
+      <a class="download-pill" href="wheelchair-presentation.pdf" download>
+        Presentation <span class="dl-type">PDF</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="foot">
+  <div class="frame">
+    <div class="foot-links">
+      <a href="index.html">← Back to portfolio</a>
+      <a href="mailto:yigitermuhammedtuncer@gmail.com">yigitermuhammedtuncer@gmail.com</a>
+    </div>
+    <div class="foot-note">© 2026 Yigiter Tuncer — Milano, Italy</div>
+  </div>
+</div>
+
+</body>
+</html>
