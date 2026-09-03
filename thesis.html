@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Reconstruction of Parametric CAD Models — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.12);
+    --line-soft:rgba(242,240,236,0.07);
+    --panel:#0e0e10;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  .wrap{ max-width:760px; margin:0 auto; padding:0 28px 120px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:block;
+    margin-bottom:14px;
+  }
+
+  header.top{
+    padding:36px 0 0;
+  }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    color:var(--muted);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    letter-spacing:0.03em;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--ink); }
+
+  .hero{ padding:34px 0 56px; border-bottom:1px solid var(--line); }
+  .hero h1{
+    font-family:'Sora', sans-serif;
+    font-weight:800;
+    font-size:clamp(1.9rem, 4.4vw, 2.6rem);
+    line-height:1.12;
+    letter-spacing:-0.01em;
+    margin:0 0 16px;
+    text-wrap:balance;
+  }
+  .hero .meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--muted-dim);
+    margin-bottom:22px;
+  }
+  .hero p.lede{ color:var(--muted); font-size:1.05rem; max-width:64ch; }
+
+  section{ padding:54px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  section h2{
+    font-family:'Sora', sans-serif;
+    font-weight:700;
+    font-size:1.4rem;
+    margin:0 0 20px;
+    letter-spacing:-0.005em;
+  }
+  section p{ color:var(--muted); margin:0 0 14px; }
+  section p:last-child{ margin-bottom:0; }
+
+  /* pipeline diagram */
+  .pipeline{
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:8px;
+  }
+  .phase{
+    display:grid;
+    grid-template-columns:64px 1fr;
+    gap:18px;
+    padding:20px 22px;
+    background:var(--panel);
+    border-bottom:1px solid var(--line);
+    align-items:start;
+  }
+  .phase:last-child{ border-bottom:none; }
+  .phase-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    color:var(--accent);
+    border:1px solid var(--line);
+    border-radius:50%;
+    width:34px; height:34px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .phase h3{
+    font-family:'Sora', sans-serif;
+    font-size:0.98rem;
+    font-weight:600;
+    margin:0 0 6px;
+  }
+  .phase p{ margin:0; font-size:0.9rem; color:var(--muted); }
+  .phase-arrow{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--muted-dim);
+    padding:2px 0;
+    background:var(--panel);
+    border-bottom:1px solid var(--line);
+    font-size:0.8rem;
+  }
+
+  /* scope two-col */
+  .scope-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .scope-box{ border:1px solid var(--line); border-radius:8px; padding:18px 20px; }
+  .scope-box h4{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  .scope-box.in h4{ color:var(--accent); }
+  .scope-box.out h4{ color:var(--muted-dim); }
+  .scope-box ul{ margin:0; padding-left:18px; color:var(--muted); font-size:0.9rem; }
+  .scope-box li{ margin-bottom:6px; }
+
+  /* research questions */
+  .rq{ border-left:2px solid var(--line); padding-left:18px; margin-bottom:26px; }
+  .rq:last-child{ margin-bottom:0; }
+  .rq-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.7rem;
+    color:var(--accent);
+    letter-spacing:0.05em;
+    display:block;
+    margin-bottom:6px;
+  }
+  .rq p{ font-size:0.94rem; }
+
+  /* literature clusters */
+  .cluster{ margin-bottom:16px; }
+  .cluster b{ color:var(--ink); font-weight:600; font-size:0.94rem; }
+
+  /* PRISMA funnel */
+  .funnel{ display:flex; flex-direction:column; gap:10px; margin:24px 0 8px; }
+  .funnel-row{ display:grid; grid-template-columns:120px 1fr 60px; align-items:center; gap:14px; }
+  .funnel-label{ font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--muted); }
+  .funnel-bar-track{ height:10px; background:var(--line-soft); border-radius:5px; overflow:hidden; }
+  .funnel-bar{ height:100%; background:var(--ink); border-radius:5px; }
+  .funnel-count{ font-family:'IBM Plex Mono', monospace; font-size:0.82rem; text-align:right; }
+
+  footer.bottom{ padding:40px 0 0; }
+
+  @media (max-width:640px){
+    .scope-grid{ grid-template-columns:1fr; }
+    .phase{ grid-template-columns:44px 1fr; }
+    .funnel-row{ grid-template-columns:80px 1fr 44px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <a class="back-link" href="index.html">← Back to Portfolio</a>
+  </header>
+
+  <section class="hero" style="border-top:none;">
+    <span class="kicker">MSc Thesis · Politecnico di Milano</span>
+    <h1>3D Reconstruction of Parametric CAD Models from 2D Engineering Drawings</h1>
+    <div class="meta">Feb 2026 – Nov 2026 · Ongoing</div>
+    <p class="lede">Given only a 2D technical drawing, the goal is for a computer to independently reconstruct it into an editable, parametric 3D CAD model — automating a process that currently takes engineers hours or days for every legacy drawing sitting in a factory archive.</p>
+  </section>
+
+  <section>
+    <h2>Why this matters</h2>
+    <p>Factories and engineering offices hold millions of legacy 2D technical drawings (paper, DXF, PDF). Converting them to 3D today requires an engineer to manually redraw them in SolidWorks or FreeCAD. This thesis designs a modular hybrid deep learning pipeline that automates that conversion for a well-defined class of mechanical parts, while staying honest about where it currently breaks down.</p>
+  </section>
+
+  <section>
+    <h2>Pipeline architecture</h2>
+    <div class="pipeline">
+      <div class="phase">
+        <div class="phase-num">1</div>
+        <div>
+          <h3>Vision &amp; Perception — Seeing + Reading</h3>
+          <p>Detects orthographic views and dimension callouts (YOLOv11), converts them into clean vector primitives without thinning artifacts (U-Net + Transformer), builds a topology graph (GraphSAGE), and extracts tolerances via OCR.</p>
+        </div>
+      </div>
+      <div class="phase-arrow">↓</div>
+      <div class="phase">
+        <div class="phase-num">2</div>
+        <div>
+          <h3>Translational Bridge</h3>
+          <p>A small trainable adapter (MLP) maps the topology graph embedding into the prefix space of a frozen, pre-trained CAD decoder — avoiding the need to train a giant network from scratch on limited hardware.</p>
+        </div>
+      </div>
+      <div class="phase-arrow">↓</div>
+      <div class="phase">
+        <div class="phase-num">3</div>
+        <div>
+          <h3>Sequential CAD Synthesis</h3>
+          <p>The frozen decoder generates an ordered sequence of parametric CAD operations — sketch, extrude, revolve — mirroring how a human engineer builds a feature tree.</p>
+        </div>
+      </div>
+      <div class="phase-arrow">↓</div>
+      <div class="phase">
+        <div class="phase-num">4</div>
+        <div>
+          <h3>Quality Control &amp; Verification</h3>
+          <p>Generated dimensions are cross-validated against the OCR-extracted ground truth from Phase 1. Discrepancies are corrected before the model is dispatched to the FreeCAD API as an editable, parametric .FCStd solid.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Scope</h2>
+    <div class="scope-grid">
+      <div class="scope-box in">
+        <h4>In scope</h4>
+        <ul>
+          <li>Single, non-assembly, prismatic parts</li>
+          <li>Sketch + Extrude operations</li>
+          <li>Sketch + Revolve operations</li>
+          <li>Unification of the two above</li>
+        </ul>
+      </div>
+      <div class="scope-box out">
+        <h4>Out of scope</h4>
+        <ul>
+          <li>Multi-part assemblies</li>
+          <li>Sweep operations (e.g. a pipe elbow)</li>
+          <li>Loft operations (e.g. an airplane wing)</li>
+          <li class="soon">— reserved for future work —</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Research questions</h2>
+
+    <div class="rq">
+      <span class="rq-tag">RQ1 — Vectorization fidelity</span>
+      <p>When a deep-vectorization architecture is evaluated on drawings dense with GD&amp;T/tolerance annotations, to what extent is intersection-point fidelity preserved compared to traditional thinning methods, which are known to corrupt corners and propagate errors downstream?</p>
+    </div>
+
+    <div class="rq">
+      <span class="rq-tag">RQ2 — Cross-view fusion</span>
+      <p>Does projection-aligned cross-attention fusion across orthographic views (front/top/side) meaningfully outperform naive aggregation (concatenation + MLP) for 3D reconstruction accuracy — adapting the epipolar-attention idea from 3D vision to an orthographic, graph-based setting no prior work has tested?</p>
+    </div>
+
+    <div class="rq">
+      <span class="rq-tag">RQ3 — Prefix-tuning generalization (core question)</span>
+      <p>Does prefix-tuning, known to steer large general-purpose frozen models (GPT-2, CLIP), still work when the frozen model is a decoder trained exclusively on a narrow, symbolic CAD-command vocabulary — or is that steerability an emergent property of scale and training diversity that a narrow-domain decoder simply doesn't have?</p>
+    </div>
+
+    <div class="rq">
+      <span class="rq-tag">RQ4 — Hallucination correction</span>
+      <p>When a generated dimension is cross-validated against an independently OCR-extracted tolerance value through rule-based correction middleware, to what extent can numerical hallucinations be detected and corrected within acceptable engineering tolerance bounds?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where this sits in the literature</h2>
+    <div class="cluster"><b>Classical / rule-based systems</b> (GTX 5000, AVSED — 1990s): 2D vectorization only, no 3D reconstruction, and thinning algorithms distort geometry at intersections.</div>
+    <div class="cluster"><b>Modern end-to-end generative systems</b> (DeepCAD, eCAD-Net, CMT): generate 3D B-Rep, but assume a 3D input already exists, need massive GPU clusters, or rely on pixel-dense multi-view CNNs.</div>
+    <div class="cluster"><b>Graph-based 2D analysis systems</b> (GraphSAGE-based entity classification, Deep Vectorization): state-of-the-art at parsing 2D topology, but never bridge into 3D CAD generation.</div>
+    <p>This thesis connects the graph-based 2D analysis cluster to the lightweight, frozen-backbone generation cluster — a bridge no reviewed paper has built.</p>
+  </section>
+
+  <section>
+    <h2>Systematic literature review</h2>
+    <p>A PRISMA-style review was run across Scopus, IEEE Xplore, and Web of Science (2018–2026), with a supplementary Google Scholar pass for older foundational work (1998–2016).</p>
+    <div class="funnel">
+      <div class="funnel-row">
+        <span class="funnel-label">Screened</span>
+        <div class="funnel-bar-track"><div class="funnel-bar" style="width:100%"></div></div>
+        <span class="funnel-count">102</span>
+      </div>
+      <div class="funnel-row">
+        <span class="funnel-label">Title/Abstract</span>
+        <div class="funnel-bar-track"><div class="funnel-bar" style="width:34%"></div></div>
+        <span class="funnel-count">35</span>
+      </div>
+      <div class="funnel-row">
+        <span class="funnel-label">Included</span>
+        <div class="funnel-bar-track"><div class="funnel-bar" style="width:17%"></div></div>
+        <span class="funnel-count">17</span>
+      </div>
+    </div>
+    <p>102 records screened → 35 passed title/abstract screening → 17 included after full-text review, each logged with its core method, dataset, limitations, and reported performance metrics.</p>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <p>In progress (expected completion: November 2026). Full thesis manuscript, benchmark code, and dataset pipelines will be made publicly available upon academic defense.</p>
+  </section>
+
+  <footer class="bottom">
+    <a class="back-link" href="index.html">← Back to Portfolio</a>
+  </footer>
+
+</div>
+
+</body>
+</html>
