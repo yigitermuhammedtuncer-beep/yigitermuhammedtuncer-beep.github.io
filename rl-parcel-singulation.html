@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parcel Singulation with Reinforcement Learning — Yigiter Tuncer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050506;
+    --ink:#f2f0ec;
+    --muted:#9a978f;
+    --muted-dim:#5c5952;
+    --accent:#f2f0ec;
+    --line:rgba(242,240,236,0.12);
+    --line-soft:rgba(242,240,236,0.07);
+    --panel:#0e0e10;
+    --ok:#a9c99a;
+    --warn:#d9b46a;
+    --bad:#c98a8a;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  img, video{ max-width:100%; display:block; border-radius:8px; }
+  .wrap{ max-width:780px; margin:0 auto; padding:0 28px 120px; }
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:block;
+    margin-bottom:14px;
+  }
+
+  header.top{ padding:36px 0 0; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none; color:var(--muted);
+    font-family:'IBM Plex Mono', monospace; font-size:0.78rem; letter-spacing:0.03em;
+    transition:color .15s ease;
+  }
+  .back-link:hover{ color:var(--ink); }
+
+  .hero{ padding:34px 0 40px; border-bottom:1px solid var(--line); }
+  .hero-img{ margin:26px 0 30px; aspect-ratio:16/9; overflow:hidden; background:var(--panel); }
+  .hero-img img{ width:100%; height:100%; object-fit:cover; border-radius:10px; }
+  .hero h1{
+    font-family:'Sora', sans-serif; font-weight:800;
+    font-size:clamp(1.9rem, 4.4vw, 2.6rem);
+    line-height:1.12; letter-spacing:-0.01em; margin:0 0 16px; text-wrap:balance;
+  }
+  .hero .meta{ font-family:'IBM Plex Mono', monospace; font-size:0.78rem; color:var(--muted-dim); margin-bottom:6px; }
+  .hero .team{ font-family:'IBM Plex Mono', monospace; font-size:0.74rem; color:var(--muted-dim); margin-bottom:22px; }
+  .hero p.lede{ color:var(--muted); font-size:1.05rem; max-width:64ch; margin-bottom:24px; }
+
+  .pill-group{ display:flex; gap:12px; flex-wrap:wrap; }
+  .pill{
+    display:inline-block; text-align:center; text-decoration:none;
+    padding:13px 22px; border-radius:999px; font-size:0.9rem; font-weight:500;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .pill-primary{ background:var(--accent); color:#141110; font-weight:600; }
+  .pill-primary:hover{ transform:translateY(-1px); opacity:0.92; }
+  .pill-secondary{ border:1px solid var(--line); color:var(--ink); }
+  .pill-secondary:hover{ border-color:var(--accent); color:var(--accent); }
+
+  section{ padding:54px 0; border-bottom:1px solid var(--line); }
+  section:last-of-type{ border-bottom:none; }
+  section h2{ font-family:'Sora', sans-serif; font-weight:700; font-size:1.4rem; margin:0 0 20px; letter-spacing:-0.005em; }
+  section h3{ font-family:'Sora', sans-serif; font-weight:600; font-size:1.02rem; margin:0 0 6px; }
+  section p{ color:var(--muted); margin:0 0 14px; }
+  section p:last-child{ margin-bottom:0; }
+
+  .num-list{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .num-item{ display:grid; grid-template-columns:44px 1fr; gap:16px; padding:18px 20px; background:var(--panel); border-bottom:1px solid var(--line); }
+  .num-item:last-child{ border-bottom:none; }
+  .num-badge{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; color:var(--accent);
+    border:1px solid var(--line); border-radius:50%;
+    width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .num-item p{ margin:0; font-size:0.9rem; }
+
+  .card-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .card{ border:1px solid var(--line); border-radius:8px; padding:16px 18px; }
+  .card p{ font-size:0.88rem; margin:0; }
+
+  .bug{ border-left:2px solid var(--line); padding-left:18px; margin-bottom:24px; }
+  .bug:last-child{ margin-bottom:0; }
+  .bug-tag{ font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--accent); letter-spacing:0.04em; display:block; margin-bottom:6px; }
+  .bug p{ font-size:0.92rem; }
+
+  table{ width:100%; border-collapse:collapse; font-size:0.86rem; }
+  th, td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); color:var(--muted); }
+  th{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; letter-spacing:0.05em; text-transform:uppercase; color:var(--muted-dim); font-weight:500; }
+  td.ok{ color:var(--ok); }
+  td.warn{ color:var(--warn); }
+  td.bad{ color:var(--bad); }
+
+  .code{
+    background:var(--panel); border:1px solid var(--line); border-radius:8px;
+    padding:16px 18px; font-family:'IBM Plex Mono', monospace; font-size:0.78rem;
+    color:#c9d4c2; overflow-x:auto; line-height:1.6; margin-bottom:14px;
+  }
+  .code .c{ color:var(--muted-dim); }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:8px; }
+  .stat{ border:1px solid var(--line); border-radius:8px; padding:18px; text-align:center; }
+  .stat .num{ font-family:'Sora', sans-serif; font-weight:800; font-size:1.7rem; }
+  .stat .lbl{ font-family:'IBM Plex Mono', monospace; font-size:0.68rem; color:var(--muted-dim); text-transform:uppercase; letter-spacing:0.04em; margin-top:4px; }
+
+  .gallery-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
+  .gallery-grid img{ aspect-ratio:4/3; object-fit:cover; width:100%; }
+  .video-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .video-card{ border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .video-card video{ width:100%; display:block; border-radius:0; }
+  .video-label{ padding:10px 14px; font-family:'IBM Plex Mono', monospace; font-size:0.7rem; color:var(--muted); }
+  .video-label b{ color:var(--ink); display:block; margin-bottom:2px; font-size:0.78rem; }
+
+  .downloads{ display:flex; flex-wrap:wrap; gap:12px; margin-top:10px; }
+  .dl{
+    display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+    border:1px solid var(--line); color:var(--ink); padding:11px 18px; border-radius:999px;
+    font-size:0.86rem; transition:border-color .15s ease;
+  }
+  .dl:hover{ border-color:var(--accent); }
+  .dl .ext{ color:var(--muted-dim); font-family:'IBM Plex Mono', monospace; font-size:0.72rem; }
+
+  footer.bottom{ padding:40px 0 0; }
+
+  @media (max-width:600px){
+    .card-grid{ grid-template-columns:1fr; }
+    .gallery-grid{ grid-template-columns:1fr; }
+    .video-grid{ grid-template-columns:1fr; }
+    .stat-grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="top">
+    <a class="back-link" href="index.html">← Back to Portfolio</a>
+  </header>
+
+  <section class="hero" style="border-top:none;">
+    <span class="kicker">Reinforcement Learning · MATLAB · Politecnico di Milano</span>
+    <h1>Parcel Singulation on an Active-Matrix Separator, with PPO</h1>
+    <div class="meta">Feb 2026 – Jun 2026 · Machine Learning for Mechanical Systems</div>
+    <div class="team">Yigiter Tuncer · Dorin-Mihail Dinulescu · Tomas Altermatt — Prof. Loris Roveda</div>
+    <div class="hero-img" style="aspect-ratio:1879/610;"><img src="reward-convergence.jpg" alt="PPO agent training reward convergence, two representative runs" style="object-fit:contain;"></div>
+    <p class="lede">A Proximal Policy Optimization agent that controls a 5×5 grid of independently-actuated motor cells to take scattered, randomly-sized parcels and singulate them into a single, evenly-spaced line — reaching 100% functional-requirement compliance after ten iterations of reward-function redesign.</p>
+    <div class="pill-group">
+      <a class="pill pill-primary" href="https://github.com/yigitermuhammedtuncer-beep/Matlab-ML-Project-Logistics-Parcel-Singulation" target="_blank" rel="noopener">View code on GitHub</a>
+      <a class="pill pill-secondary" href="rl-report.pdf" download>Full report (PDF)</a>
+    </div>
+  </section>
+
+  <section>
+    <h2>The problem</h2>
+    <p>E-commerce logistics needs to turn chaotic, randomly-arriving parcels into a single ordered line before scanning and routing — traditional conveyors (cross-belt, pop-up rollers) can't adapt to variable parcel sizes and arrival rates. The Active-Matrix Separator (AMS) replaces the conveyor with 25 independent motorised cells (5×5, 0.2×0.2 m each) that can each impose a distinct velocity and rotation on the parcel above them — a fully distributed alternative to one uniform belt force.</p>
+    <p>With a 50-dimensional continuous action space (2 parameters × 25 cells) and constantly varying box sizes and arrival timing, hand-written IF-THEN rules explode combinatorially. The project frames this instead as a Markov Decision Process and trains a PPO agent to discover the control policy on its own.</p>
+    <img src="box-diagram.jpg" alt="AMS grid coordinate system with two example parcels" style="max-width:360px; margin-top:18px;">
+  </section>
+
+  <section>
+    <h2>Functional requirements</h2>
+    <table>
+      <tr><th>ID</th><th>Requirement</th><th>Verified via</th></tr>
+      <tr><td>FR1</td><td>Cargo singulation into a single continuous row</td><td>Cumulative accuracy at the 1 m evaluation line</td></tr>
+      <tr><td>FR2</td><td>Minimum 15 cm longitudinal gap between parcels</td><td><code>lastGap</code> metric during simulation</td></tr>
+      <tr><td>FR3</td><td>Zero bounding-box collisions</td><td>Collision-penalty counter per episode</td></tr>
+      <tr><td>FR4</td><td>Exit close to the lateral centerline</td><td>Statistical deviation from X = 0.5 m</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>MDP formulation &amp; algorithm</h2>
+    <div class="card-grid">
+      <div class="card"><h3>State space</h3><p>A fixed 100×1 vector: positions, diameters and velocities of up to 10 parcels, the previous 50-dim action (for kinematic memory under partial observability), and exit flags.</p></div>
+      <div class="card"><h3>Action space</h3><p>50 continuous outputs — per cell, a rotation in [−45°, +45°] and a forward speed in [0.5, 2.2] m/s, mapped from PPO's tanh output range.</p></div>
+      <div class="card"><h3>Algorithm</h3><p>PPO with a clipped surrogate objective (clip = 0.2) and Generalized Advantage Estimation (λ = 0.95, γ = 0.99) to balance long-horizon credit assignment against variance.</p></div>
+      <div class="card"><h3>Network</h3><p>Actor &amp; Critic MLPs, [512, 256, 128] units, He initialisation, ReLU hidden layers, tanh + softplus action head.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reward engineering — ten iterations to 100%</h2>
+    <p>Sparse end-of-episode rewards are nearly impossible to learn from in a 50-dimensional action space, but dense shaped rewards invite the agent to hack the reward instead of solving the actual task. Getting from a naive reward function to one that actually singulates parcels took ten iterations, each surfacing a new failure mode:</p>
+
+    <div class="bug">
+      <span class="bug-tag">V1–V2 — Bang-bang jittering</span>
+      <p>Penalising gap error quadratically caused the agent to panic-brake and jitter laterally instead of settling smoothly. Switching to a linear penalty gave a smoother gradient and stopped the oscillation.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">V3–V4 — The Catch-22 speed paradox</span>
+      <p>A minimum-speed penalty (to stop the agent freezing) directly conflicted with the collision penalty whenever a parcel was blocked from ahead: slow down → speed penalty; speed up → collision penalty. Solved with an adaptive <code>is_blocked</code> exemption that lifts the speed floor for blocked agents.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">V5–V7 — The m/step vs. m/s bug</span>
+      <p>The physics engine reported lateral velocity in metres-per-step, not metres-per-second — so a parcel actually moving at 1.9 m/s registered as 0.019, triggering constant false slow-speed penalties. Fixed by dividing through by Δt to get true SI units, which also let the over-strong centering penalty be relaxed to a proximity-weighted parabola.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">V8–V10 — Pseudo-collisions &amp; reward hacking</span>
+      <p>Because the gap check only looked at the Y-axis, two parcels safely overtaking each other on different lateral lanes still triggered a heavy gap penalty when side-by-side — so the agent learned to pin parcels against the walls instead of actually singulating them ("wall hacking"). Fixed by adding an X-lane differentiation term: parcels in different lanes are exempt from the gap penalty and rewarded for average speed instead.</p>
+    </div>
+
+    <div class="bug">
+      <span class="bug-tag">The "lazy policy" trap</span>
+      <p>Early iterations (V1, V5) actually show flatter, more positive-looking reward curves than the final version — which looks like better learning until you watch the video: the agent found a stable, cheap way to avoid penalties (hugging the walls) rather than solving the real task. The final architecture's reward curve shows a much sharper initial drop as the agent is forced through the harder constraints, before climbing to a stable plateau that actually represents 100% accuracy — a reminder that the reward curve alone can be a misleading proxy for task success.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Results</h2>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">100%</div><div class="lbl">Wave-based accuracy</div></div>
+      <div class="stat"><div class="num">0.89–1.30 m</div><div class="lbl">Avg. gap (vs 0.15 m required)</div></div>
+      <div class="stat"><div class="num">0</div><div class="lbl">Collisions after training</div></div>
+    </div>
+    <p style="margin-top:18px;">In the wave-based scenario (parcels replenished as previous ones exit), the trained agent meets FR1–FR4 with a wide safety margin — the average gap between parcels settles at 0.89–1.30 m, roughly 6–9× the 0.15 m minimum. Before training, a random-weight agent produced overlapping parcels and negative gaps down to −0.128 m, with only incidental 40–50% accuracy from random spacing rather than any learned behaviour.</p>
+  </section>
+
+  <section>
+    <h2>Ablation study — watching the policy evolve</h2>
+    <p>Numerical accuracy alone can be misleading (a 71% score can hide a policy that's actually broken), so each reward iteration was also validated visually:</p>
+    <div class="video-grid">
+      <div class="video-card">
+        <video controls preload="metadata" src="before-training.mp4"></video>
+        <div class="video-label"><b>Before training</b>Random-weight baseline — overlapping parcels, negative gaps</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="v1-wall-hacking.mp4"></video>
+        <div class="video-label"><b>V1 — Wall hacking</b>Parcels pinned to the walls to dodge the penalty — 85.7% accuracy, but not real singulation</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="v5-metric-illusion.mp4"></video>
+        <div class="video-label"><b>V5 — Metric illusion</b>Severe physical overlaps (gaps to −0.284 m) hidden behind a misleadingly high 71% score</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="v11-final-wave.mp4"></video>
+        <div class="video-label"><b>V11 — Gold standard</b>Parabolic centering + X-lane logic — 100% accuracy, wave-based scenario</div>
+      </div>
+      <div class="video-card">
+        <video controls preload="metadata" src="v11-time-based-stress.mp4"></video>
+        <div class="video-label"><b>V11 — Stress test</b>Continuous 0.75s parcel injection — accuracy drops to 85.7% from a physical throughput ceiling, not a policy weakness</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Hyperparameter sensitivity — policy collapse</h2>
+    <p>A stress configuration (batch 64, 10 epochs, entropy weight dropped to 0.005 — pushing for faster, more exploitative updates) was tested against the reference setup (batch 128, 3–5 epochs, entropy 0.02). Training time increased from ~14 to ~24 hours, and the policy collapsed into a local optimum: the agent stopped exploring, forgot the X-lane separation rule entirely, and went back to colliding parcels. Confirms the need for a minimum exploration margin — more updates per batch isn't automatically better in an environment this constrained.</p>
+  </section>
+
+  <section>
+    <h2>Limitations &amp; future work</h2>
+    <div class="bug">
+      <span class="bug-tag">Physical throughput ceiling</span>
+      <p>The 85–100% accuracy swing under the continuous-injection stress test comes from the 1 m² AMS area's physical discharge capacity, not the PPO policy. → Larger grids (7×7, 10×10) would test whether this is truly a hardware limit.</p>
+    </div>
+    <div class="bug">
+      <span class="bug-tag">Sim-to-real gap</span>
+      <p>Training ran in an idealised kinematic simulation — no actuator latency, sensor noise, or friction variation. → Real-hardware calibration would be needed before deployment.</p>
+    </div>
+    <div class="bug">
+      <span class="bug-tag">Single centralised agent</span>
+      <p>One policy currently controls all 25 cells. → A distributed multi-agent (MARL) architecture, where each cell or cell-cluster decides independently, would scale better to larger grids.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Code &amp; report</h2>
+    <p>Full MATLAB implementation, environment, and training scripts are public on GitHub. The complete written report covers the MDP formulation, all ten reward iterations, and the ablation study in full detail.</p>
+    <div class="downloads">
+      <a class="dl" href="https://github.com/yigitermuhammedtuncer-beep/Matlab-ML-Project-Logistics-Parcel-Singulation" target="_blank" rel="noopener">Source code <span class="ext">GitHub</span></a>
+      <a class="dl" href="rl-report.pdf" download>Full report <span class="ext">PDF</span></a>
+    </div>
+  </section>
+
+  <footer class="bottom">
+    <a class="back-link" href="index.html">← Back to Portfolio</a>
+  </footer>
+
+</div>
+
+</body>
+</html>
